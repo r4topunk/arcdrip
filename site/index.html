@@ -606,13 +606,13 @@ pre.run .c{color:var(--dim)}
           <span class="h" id="status-h"><i></i><span id="status-line" data-i18n="statusLine">Mainnet deploy in progress</span></span>
           <p id="status-p" data-i18n="statusP">Every package builds and its tests pass locally, including the invariant suite. The address and each proof transaction fill in as the deployment lands. Every wallet in the proof run belongs to the author.</p>
           <ul class="addrs">
-            <li><span>DripPool</span><span class="tbd" id="dep-address">TBD</span></li>
-            <li><span data-i18n="addr2">Deploy, verified on Sourcify</span><span class="tbd" id="dep-verify">TBD</span></li>
-            <li><span data-i18n="addr3">Proof pool, first deposit</span><span class="tbd">TBD</span></li>
-            <li><span data-i18n="addr4">withdrawFor paid by someone else</span><span class="tbd">TBD</span></li>
-            <li><span data-i18n="addr5">Join, freeze, resume, no back-pay</span><span class="tbd">TBD</span></li>
-            <li><span data-i18n="addr6">Pay everyone in one transaction</span><span class="tbd">TBD</span></li>
-            <li><span data-i18n="addr7">Cancel, member withdraws anyway</span><span class="tbd">TBD</span></li>
+            <li><span>DripPool</span><span class="tbd" id="dep-address"><a href="https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f" rel="noopener">0x92b8…A44f</a></span></li>
+            <li><span data-i18n="addr2">Deploy, verified on Sourcify</span><span class="tbd" id="dep-verify"><a href="https://explorer.arc.io/tx/0x40bb522a145c1a0617df2b08daa1f718b8e2b08c5141844265f25fb4338fa621" rel="noopener">deploy tx</a> · <a href="https://repo.sourcify.dev/5042/0x92b8fdB2c457b64d4510aC980A84283356D8A44f" rel="noopener">Sourcify</a></span></li>
+            <li><span data-i18n="addr3">Proof pool, first deposit</span><span class="tbd" data-proof="pool1.deposit">in progress</span></li>
+            <li><span data-i18n="addr4">withdrawFor paid by someone else</span><span class="tbd" data-proof="pool1.withdrawFor">in progress</span></li>
+            <li><span data-i18n="addr5">Join, freeze, resume, no back-pay</span><span class="tbd" data-proof="pool1.setSharesJoin pool1.depositResume">in progress</span></li>
+            <li><span data-i18n="addr6">Pay everyone in one transaction</span><span class="tbd" data-proof="pool1.withdrawForBatch">in progress</span></li>
+            <li><span data-i18n="addr7">Cancel, member withdraws anyway</span><span class="tbd" data-proof="pool2.cancel pool2.withdrawAfterCancel">in progress</span></li>
           </ul>
         </div>
       </div>
@@ -673,7 +673,7 @@ pre.run .c{color:var(--dim)}
       ctaHow:'See how it splits', ctaGithub:'View on GitHub', ctaSpec:'Read the spec', ctaApp:'Open the app',
       statusLiveLine:'Live on Arc mainnet',
       statusLiveP:'DripPool is deployed on Arc mainnet and the app talks to it directly from your wallet: no server, no indexer. Proof transactions fill in below as the proof pools run. Every wallet in the proof run belongs to the author.',
-      depTx:'deploy tx', depSourcify:'Sourcify',
+      depTx:'deploy tx', depSourcify:'Sourcify', proofTx:'tx', proofPending:'in progress',
       streaming:'STREAMING', poolTag:'example pool · live model, try it', rateWord:'rate',
       svgPool:'POOL', svgUnstreamed:'USDC unstreamed', svgRunway:'RUNWAY', payBtn:'Pay everyone',
       heroNote:'Example numbers, not a live pool. The ticking uses the same accrual math as the contract.',
@@ -737,7 +737,7 @@ pre.run .c{color:var(--dim)}
       ctaHow:'Ver como divide', ctaGithub:'Ver no GitHub', ctaSpec:'Ler a especificação', ctaApp:'Abrir o app',
       statusLiveLine:'No ar na mainnet da Arc',
       statusLiveP:'O DripPool está na mainnet da Arc e o app fala com ele direto da sua carteira: sem servidor, sem indexador. As transações de prova entram abaixo conforme as pools de prova rodam. Todas as carteiras da prova pertencem ao autor.',
-      depTx:'tx de deploy', depSourcify:'Sourcify',
+      depTx:'tx de deploy', depSourcify:'Sourcify', proofTx:'tx', proofPending:'em andamento',
       streaming:'FLUINDO', poolTag:'pool de exemplo · modelo ao vivo, experimente', rateWord:'taxa',
       svgPool:'POOL', svgUnstreamed:'USDC não distribuídos', svgRunway:'AUTONOMIA', payBtn:'Pagar todos',
       heroNote:'Números de exemplo, não é um pool real. A contagem usa a mesma matemática de acúmulo do contrato.',
@@ -975,6 +975,13 @@ pre.run .c{color:var(--dim)}
       el.replaceChildren();
       parts.forEach((a, i) => { if (i) el.append(' · '); el.append(a); });
     }
+    const proofs = d.proofTxs || {};
+    document.querySelectorAll('[data-proof]').forEach((el) => {
+      const hashes = el.getAttribute('data-proof').split(' ').map((k) => proofs[k]).filter((h) => /^0x[0-9a-fA-F]{64}$/.test(h || ''));
+      el.replaceChildren();
+      if (!hashes.length) { el.textContent = L().proofPending; return; }
+      hashes.forEach((h, i) => { if (i) el.append(' · '); el.append(link(explorer + '/tx/' + h, h.slice(0, 6) + '…' + h.slice(-4))); });
+    });
   }
   function renderDeployment(d) {
     const c = d && d.contracts && d.contracts.DripPool;

@@ -10,18 +10,34 @@
   },
   "contracts": {
     "DripPool": {
-      "address": null,
-      "deployBlock": null,
-      "deployTx": null,
-      "verified": false,
-      "commit": null,
-      "deployer": null,
+      "address": "0x92b8fdb2c457b64d4510ac980a84283356d8a44f",
+      "deployBlock": 21543579,
+      "deployTx": "0x40bb522a145c1a0617df2b08daa1f718b8e2b08c5141844265f25fb4338fa621",
+      "verified": true,
+      "commit": "6b33c1725cc21a2c2d2d99a877af14908df0c008",
+      "deployer": "0x39a7b6fa1597bb6657fe84e64e3b836c37d6f75d",
       "salt": "keccak256(\"arcdrip.v1\")",
-      "saltHash": null,
+      "saltHash": "0xf565c9179457d16efba5e73e31ac6a25a183c67a440009e4dd04baf336278b6d",
       "constructorArgs": {
         "usdc": "0x3600000000000000000000000000000000000000"
       }
     }
   },
-  "proofTxs": {}
+  "proofTxs": {
+    "pool1.createPool": "0xc46ded991975902399f5592699d769428262a8b85641762f04e6180a56741e17",
+    "pool1.setSharesBatch": "0x445a5431f608871356fa3e084941523006d9fd8928a812f08c0c8dc2b3a2dafa",
+    "pool1.approve": "0x412ecbea1cab2449cf92521ad0741c58f4f235bb68e3d7faaafa6b3956916296",
+    "pool1.deposit": "0xdcd8771e113fc6606a361cbe66211c3da1ef7c11c0de4aaada12368d6cdd8f77",
+    "pool2.createPool": "0xc0bc79e37451b8407a85a0588eb7a9cb4cb336f72a2e2bbaa9d10b1053d5224d",
+    "pool2.setShares": "0x855f0d39ee98527ad61afa169df01900562fc5005bb9b89e9b528ebd24ba7b93",
+    "pool2.approve": "0xbc59ad3299a0f7d7744dd13cd96b7cf7f730485c73e47c64be0c06c1d4d84599",
+    "pool2.deposit": "0x53f2045644a09be8b8dadcabbbf0a4f0527cc96730aee743a44475928ad1d365",
+    "pool2.withdrawBeforeCancel": "0x8d9bfc93a196c139babeb37c24a6b1eb862897daf7f372472b4b51b3cabc0d2e",
+    "pool2.cancel": "0x3fa2cf078949abee422a5c95ab405875b21b6eaacdae3b9f050490430f6d6cd6",
+    "pool2.withdrawAfterCancel": "0x1b0c57b5857f80972bf9790c186c1ce82cfae999b0e1721ba147fa125c454457",
+    "pool1.withdraw": "0x5fce2ef1183527c979be15c65fc534cacd5c843c4f678ee6ede4c7e93ed1082d",
+    "pool1.withdrawFor": "0x2930f93a24bd2cf1ee4fa95dbc5cc870c6987abcf9f54a939bdfde5a270853af",
+    "pool1.setSharesJoin": "0x3b6d2b9740f1fa1fa1054d88099ae849502cf6c4eadb1e88be323bef1a4eb3f6",
+    "pool1.setPayoutAddress": "0x6e469441377aa6e126caaee64a9683041cdc7248e60b1ac67b28abe3d3e60072"
+  }
 }

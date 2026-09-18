@@ -26,14 +26,14 @@
 
 | Call | Target | Execution gas | Tx model | USDC at 20 gwei | vs target | Arc mainnet gasUsed |
 |---|---:|---:|---:|---:|---|---:|
-| `createPool` | ≤ 130,000 | 55,666 | 77,990 | 0.00156 | within (−52,010) | TBD |
-| `deposit`, running pool | ≤ 95,000 | 78,969 | 97,537 | 0.00195 | **over** (+2,537) | TBD |
-| `setShares`, new member, running pool | ≤ 110,000 | 94,100 | 115,812 | 0.00232 | **over** (+5,812) | TBD |
-| `withdraw`, repeat | ≤ 95,000 | 108,763 | 107,267 | 0.00215 | **over** (+12,267) | TBD |
-| `withdrawFor`, repeat | ≤ 95,000 | 108,894 | 107,562 | 0.00215 | **over** (+12,562) | TBD |
-| `withdrawForBatch`, 4 members, per member | ≤ 60,000 | 63,385 | 55,133 | 0.00110 | within (−4,867) | TBD |
-| `withdrawForBatch`, 10 members, per member | ≤ 60,000 | 54,053 | 45,091 | 0.00090 | within (−14,909) | TBD |
-| `withdrawForBatch`, 100 members, per member | ≤ 60,000 | 48,454 | 39,066 | 0.00078 | within (−20,933) | TBD |
+| `createPool` | ≤ 130,000 | 55,666 | 77,990 | 0.00156 | within (−52,010) | 78,014 |
+| `deposit`, running pool | ≤ 95,000 | 78,969 | 97,537 | 0.00195 | **over** (+2,537) | in progress (proof row 5); a first deposit into an unfunded pool measured 94,420 |
+| `setShares`, new member, running pool | ≤ 110,000 | 94,100 | 115,812 | 0.00232 | **over** (+5,812) | 98,712 |
+| `withdraw`, repeat | ≤ 95,000 | 108,763 | 107,267 | 0.00215 | **over** (+12,267) | in progress; the pool's first `withdraw` measured 166,744 (see below) |
+| `withdrawFor`, repeat | ≤ 95,000 | 108,894 | 107,562 | 0.00215 | **over** (+12,562) | in progress; a member's first `withdrawFor` measured 137,543 |
+| `withdrawForBatch`, 4 members, per member | ≤ 60,000 | 63,385 | 55,133 | 0.00110 | within (−4,867) | in progress (proof row 6) |
+| `withdrawForBatch`, 10 members, per member | ≤ 60,000 | 54,053 | 45,091 | 0.00090 | within (−14,909) | not run (the proof batch has 4 members) |
+| `withdrawForBatch`, 100 members, per member | ≤ 60,000 | 48,454 | 39,066 | 0.00078 | within (−20,933) | not run (the proof batch has 4 members) |
 
 Whole batch calls: 4 members 220,535 (0.00441 USDC), 10 members 450,916 (0.00902 USDC), 100 members 3,906,628
 (0.07813 USDC). A member with nothing payable is skipped *before* being settled, so an entry that pays nothing
@@ -42,6 +42,30 @@ now costs two cold reads instead of two cold writes: a 100-entry batch where nob
 per member for the peek (docs/SPEC.md §6.2). **Paying everyone is the cheap path**: one `withdrawForBatch` of 10 costs less per member than a
 single `withdraw`, because the 21,000 intrinsic gas and the pool's own cold slots are paid once instead of ten
 times. That is also the path the reference app's "Pay everyone" button uses (PRD 6).
+
+## Arc mainnet receipts
+
+Every proof transaction so far, `gasUsed` from `cast receipt <hash> --rpc-url https://rpc.mainnet.arc.io`
+(2026-09-18, effective gas price 20.0–20.7 gwei; hashes in `deployments/arc-mainnet.json` `proofTxs`).
+
+| Call | gasUsed | ≈ USDC | Context |
+|---|---:|---:|---|
+| Deploy `DripPool` (CREATE2 factory) | 2,365,058 | 0.0473 | one-off |
+| `createPool` | 78,014 / 78,038 | 0.0016 | pools 1 and 2 |
+| `setSharesBatch`, 3 new members, no deposit yet | 148,621 | 0.0031 | pool 1 |
+| `setShares`, new member, no deposit yet | 89,034 | 0.0018 | pool 2 |
+| `setShares`, new member, running pool | 98,712 | 0.0020 | pool 1, a fourth member joins mid-stream |
+| USDC `approve` | 55,438 | 0.0011 | |
+| `deposit`, first into an unfunded pool | 94,420 | 0.0019 | pools 1 and 2 |
+| `withdraw`, first in the pool | 166,744 | 0.0033 | pool 1 (C) and pool 2 (C, before the cancel) |
+| `withdrawFor`, member's first, pool already initialised | 137,543 | 0.0028 | pool 1, OPS pays B |
+| `setPayoutAddress` | 48,378 | 0.0010 | pool 1 (B) |
+| `cancel` | 85,321 | 0.0017 | pool 2 |
+| `withdraw` after `cancel` | 94,491 | 0.0019 | pool 2 (C) |
+
+The first `withdraw` in a pool initialises `accIndex`, `owed` and the member's `index`/`pending` (the "First-time
+calls" table below: 141,467 locally); on Arc it lands about 25k higher. The likely cause is the USDC proxy over
+the native-coin precompile, but the exact split is not measured. Steady-state rows fill in with proof rows 5–8.
 
 ## First-time calls
 
