@@ -279,3 +279,12 @@ What it does, all locally:
 | `pnpm e2e:testnet` pauses | Expected: the wait was longer than `E2E_MAX_WAIT_SECONDS`. Re-run the same command later, or use `--wait` |
 | A run state file no longer matches the deployment | `pnpm e2e:testnet --reset` archives it and starts a new pool |
 | A wallet leaks | Revoke its USDC allowance for `DripPool` (`approve(DripPool, 0)`), move the funds, transfer pool ownership (two-step) to a new wallet and create a new keystore |
+
+## Hosting (GitHub Pages)
+
+`.github/workflows/pages.yml` publishes `site/` at https://r4topunk.github.io/arcdrip/ and, **only once
+`deployments/arc-mainnet.json` has a `DripPool.address`**, the `apps/web` static export at `/arcdrip/app/`, built
+against that address and `deployBlock`. The same JSON is published as `deployment.json`; the landing reads it to
+flip its status card to "Live on Arc mainnet", link the explorer address, deploy tx and Sourcify, and show the
+"Open the app" buttons. So the commit that records the deployment (`node script/record-deployment.mjs 5042`) is
+the one that takes the app live; before it, only the landing is served and nothing points at a null address.

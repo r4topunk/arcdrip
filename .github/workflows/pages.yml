@@ -3,7 +3,13 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: [site/**, .github/workflows/pages.yml]
+    paths:
+      - site/**
+      - apps/web/**
+      - packages/sdk/**
+      - deployments/arc-mainnet.json
+      - pnpm-lock.yaml
+      - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions:
@@ -21,7 +27,57 @@ jobs:
     environment: github-pages
     steps:
       - uses: actions/checkout@v4
+
+      # deployments/arc-mainnet.json is the single source of truth: the dApp is built against it and the
+      # landing reads the published copy. Until DripPool is recorded there, only the landing is published,
+      # so the site never serves an app that points at nothing.
+      - name: Read the mainnet deployment
+        id: dep
+        run: |
+          addr=$(jq -r '.contracts.DripPool.address // empty' deployments/arc-mainnet.json)
+          block=$(jq -r '.contracts.DripPool.deployBlock // empty' deployments/arc-mainnet.json)
+          if [[ "$addr" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+            echo "deployed=true" >> "$GITHUB_OUTPUT"
+            echo "address=$addr" >> "$GITHUB_OUTPUT"
+            echo "block=$block" >> "$GITHUB_OUTPUT"
+          else
+            echo "deployed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DripPool is not recorded in deployments/arc-mainnet.json; publishing the landing only."
+          fi
+
+      # pnpm version comes from "packageManager" in package.json
+      - uses: pnpm/action-setup@v4
+        if: steps.dep.outputs.deployed == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.dep.outputs.deployed == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Build the dApp (static export under /arcdrip/app)
+        if: steps.dep.outputs.deployed == 'true'
+        env:
+          NEXT_PUBLIC_BASE_PATH: /arcdrip/app
+          NEXT_PUBLIC_CHAIN_ID: '5042'
+          NEXT_PUBLIC_DRIP_ADDRESS: ${{ steps.dep.outputs.address }}
+          NEXT_PUBLIC_DRIP_DEPLOY_BLOCK: ${{ steps.dep.outputs.block }}
+          NEXT_PUBLIC_SITE_URL: https://r4topunk.github.io/arcdrip
+        run: |
+          pnpm install --frozen-lockfile
+          # the ABI is committed, so the SDK builds without Foundry
+          pnpm --filter '@arcdrip/web...' build
+
+      - name: Assemble the site
+        run: |
+          mkdir -p _pages
+          cp -R site/. _pages/
+          cp deployments/arc-mainnet.json _pages/deployment.json
+          touch _pages/.nojekyll
+          if [ -d apps/web/out ]; then
+            mkdir -p _pages/app
+            cp -R apps/web/out/. _pages/app/
+          fi
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: _pages
       - uses: actions/deploy-pages@v4

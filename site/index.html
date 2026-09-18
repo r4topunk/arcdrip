@@ -173,6 +173,9 @@ h2{font-size:clamp(34px,3.7vw,52px);line-height:1.03;letter-spacing:-.035em}
 .addrs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--line2)}
 .addrs li{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:13px;color:var(--muted)}
 .addrs .tbd{font-family:var(--mono);color:var(--dim)}
+.addrs .tbd a{color:var(--accent)}
+.status .h.live{color:var(--accent)}.status .h.live i{background:var(--accent)}
+[hidden]{display:none!important}
 .docs{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .docs a{display:flex;flex-direction:column;gap:4px;padding:16px 18px;border:1px solid var(--line);border-radius:10px;color:var(--ink)}
 .docs a:hover{border-color:var(--accent);color:var(--ink)}
@@ -295,6 +298,7 @@ pre.run .c{color:var(--dim)}
           <p class="lead" data-i18n="lead">ArcDrip pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.</p>
           <div class="btns">
             <a class="btn primary" href="#timeline" data-i18n="ctaHow">See how it splits</a>
+            <a class="btn" href="app/" data-live hidden data-i18n="ctaApp">Open the app</a>
             <a class="btn" href="https://github.com/r4topunk/arcdrip" data-i18n="ctaGithub">View on GitHub</a>
           </div>
         </div>
@@ -599,11 +603,11 @@ pre.run .c{color:var(--dim)}
           </table>
         </div>
         <div class="card status">
-          <span class="h"><i></i><span data-i18n="statusLine">Mainnet deploy in progress</span></span>
-          <p data-i18n="statusP">Every package builds and its tests pass locally, including the invariant suite. The address and each proof transaction fill in as the deployment lands. Every wallet in the proof run belongs to the author.</p>
+          <span class="h" id="status-h"><i></i><span id="status-line" data-i18n="statusLine">Mainnet deploy in progress</span></span>
+          <p id="status-p" data-i18n="statusP">Every package builds and its tests pass locally, including the invariant suite. The address and each proof transaction fill in as the deployment lands. Every wallet in the proof run belongs to the author.</p>
           <ul class="addrs">
-            <li><span>DripPool</span><span class="tbd">TBD</span></li>
-            <li><span data-i18n="addr2">Deploy, verified on Sourcify</span><span class="tbd">TBD</span></li>
+            <li><span>DripPool</span><span class="tbd" id="dep-address">TBD</span></li>
+            <li><span data-i18n="addr2">Deploy, verified on Sourcify</span><span class="tbd" id="dep-verify">TBD</span></li>
             <li><span data-i18n="addr3">Proof pool, first deposit</span><span class="tbd">TBD</span></li>
             <li><span data-i18n="addr4">withdrawFor paid by someone else</span><span class="tbd">TBD</span></li>
             <li><span data-i18n="addr5">Join, freeze, resume, no back-pay</span><span class="tbd">TBD</span></li>
@@ -643,6 +647,7 @@ pre.run .c{color:var(--dim)}
 <span class="p">$</span> pnpm --filter @arcdrip/web dev</pre>
           <div class="btns">
             <a class="btn primary" href="https://github.com/r4topunk/arcdrip" data-i18n="ctaGithub">View on GitHub</a>
+            <a class="btn" href="app/" data-live hidden data-i18n="ctaApp">Open the app</a>
             <a class="btn" href="https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md" data-i18n="ctaSpec">Read the spec</a>
           </div>
         </div>
@@ -665,7 +670,10 @@ pre.run .c{color:var(--dim)}
       kicker:'▍ collective payroll, streamed',
       h1:'One stream.<br><span class="dim">Split by shares,</span><br>every second.',
       lead:'ArcDrip pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.',
-      ctaHow:'See how it splits', ctaGithub:'View on GitHub', ctaSpec:'Read the spec',
+      ctaHow:'See how it splits', ctaGithub:'View on GitHub', ctaSpec:'Read the spec', ctaApp:'Open the app',
+      statusLiveLine:'Live on Arc mainnet',
+      statusLiveP:'DripPool is deployed on Arc mainnet and the app talks to it directly from your wallet: no server, no indexer. Proof transactions fill in below as the proof pools run. Every wallet in the proof run belongs to the author.',
+      depTx:'deploy tx', depSourcify:'Sourcify',
       streaming:'STREAMING', poolTag:'example pool · live model, try it', rateWord:'rate',
       svgPool:'POOL', svgUnstreamed:'USDC unstreamed', svgRunway:'RUNWAY', payBtn:'Pay everyone',
       heroNote:'Example numbers, not a live pool. The ticking uses the same accrual math as the contract.',
@@ -726,7 +734,10 @@ pre.run .c{color:var(--dim)}
       kicker:'▍ folha de pagamento coletiva, em fluxo',
       h1:'Um fluxo.<br><span class="dim">Dividido por shares,</span><br>a cada segundo.',
       lead:'O ArcDrip paga um time inteiro a partir de uma pool pré-financiada. Entra uma taxa; as shares decidem quem recebe quanto. Mude a share de alguém e todos são repesados a partir daquele segundo — nada do que já foi ganho se move.',
-      ctaHow:'Ver como divide', ctaGithub:'Ver no GitHub', ctaSpec:'Ler a especificação',
+      ctaHow:'Ver como divide', ctaGithub:'Ver no GitHub', ctaSpec:'Ler a especificação', ctaApp:'Abrir o app',
+      statusLiveLine:'No ar na mainnet da Arc',
+      statusLiveP:'O DripPool está na mainnet da Arc e o app fala com ele direto da sua carteira: sem servidor, sem indexador. As transações de prova entram abaixo conforme as pools de prova rodam. Todas as carteiras da prova pertencem ao autor.',
+      depTx:'tx de deploy', depSourcify:'Sourcify',
       streaming:'FLUINDO', poolTag:'pool de exemplo · modelo ao vivo, experimente', rateWord:'taxa',
       svgPool:'POOL', svgUnstreamed:'USDC não distribuídos', svgRunway:'AUTONOMIA', payBtn:'Pagar todos',
       heroNote:'Números de exemplo, não é um pool real. A contagem usa a mesma matemática de acúmulo do contrato.',
@@ -918,6 +929,7 @@ pre.run .c{color:var(--dim)}
 
   /* ---------- i18n (same contract as the previous page) ---------- */
   const buttons = { en: $('lang-en'), pt: $('lang-pt') };
+  let deployment = null;
   function apply(next) {
     lang = I18N[next] ? next : 'en';
     const dict = L();
@@ -931,6 +943,7 @@ pre.run .c{color:var(--dim)}
     buttons.en.setAttribute('aria-pressed', String(lang === 'en'));
     buttons.pt.setAttribute('aria-pressed', String(lang === 'pt'));
     renderStructure();
+    paintDeployment();
   }
   function readStoredLang() {
     try { const v = localStorage.getItem(STORAGE_KEY); return v === 'pt' || v === 'en' ? v : null; } catch { return null; }
@@ -941,8 +954,42 @@ pre.run .c{color:var(--dim)}
   buttons.en.addEventListener('click', () => { apply('en'); storeLang('en'); });
   buttons.pt.addEventListener('click', () => { apply('pt'); storeLang('pt'); });
 
+  /* ---------- deployment (published copy of deployments/arc-mainnet.json) ---------- */
+  // The Pages workflow ships deployment.json next to this file and builds /app only once DripPool is
+  // recorded in it, so the same commit flips this card and publishes the app. Missing file = not deployed.
+  function paintDeployment() {
+    if (!deployment) return;
+    const d = deployment, c = d.contracts.DripPool;
+    const explorer = String(d.explorer || 'https://explorer.arc.io').replace(/\/+$/, '');
+    const link = (href, text) => {
+      const a = document.createElement('a');
+      a.href = href; a.rel = 'noopener'; a.textContent = text;
+      return a;
+    };
+    $('dep-address').replaceChildren(link(explorer + '/address/' + c.address, c.address.slice(0, 6) + '…' + c.address.slice(-4)));
+    const parts = [];
+    if (/^0x[0-9a-fA-F]{64}$/.test(c.deployTx || '')) parts.push(link(explorer + '/tx/' + c.deployTx, L().depTx));
+    if (c.verified === true) parts.push(link('https://repo.sourcify.dev/' + d.chainId + '/' + c.address, L().depSourcify));
+    if (parts.length) {
+      const el = $('dep-verify');
+      el.replaceChildren();
+      parts.forEach((a, i) => { if (i) el.append(' · '); el.append(a); });
+    }
+  }
+  function renderDeployment(d) {
+    const c = d && d.contracts && d.contracts.DripPool;
+    if (!c || !/^0x[0-9a-fA-F]{40}$/.test(c.address || '')) return;
+    deployment = d;
+    $('status-h').classList.add('live');
+    $('status-line').setAttribute('data-i18n', 'statusLiveLine');
+    $('status-p').setAttribute('data-i18n', 'statusLiveP');
+    document.querySelectorAll('[data-live]').forEach((el) => { el.hidden = false; });
+    apply(lang);
+  }
+
   buildStatic();
   apply(readStoredLang() || 'en');
+  fetch('deployment.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).then(renderDeployment).catch(() => {});
   setInterval(tick, 1000);
 })();
 </script>
