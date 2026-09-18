@@ -29,7 +29,7 @@ import {
   withdrawFor,
   withdrawForBatch,
   withdrawUnstreamed,
-} from '@arcdrip/sdk';
+} from '@sharedarc/sdk';
 import type { Address, Hash, PublicClient, TransactionReceipt, WalletClient } from 'viem';
 import type { Clock } from './clock.js';
 import { txUrl } from './config.js';
@@ -229,7 +229,7 @@ export async function runFlow(ctx: FlowContext): Promise<FlowResult> {
   const w1 = await ctx.signer(1);
   const owner = addressOf(w1);
   const runTag = ctx.store.get().runTag;
-  const name = `ArcDrip e2e ${runTag}`;
+  const name = `SharedArc e2e ${runTag}`;
   // deposit * 1e12 wad spread over the target runway, so the freeze happens on schedule. Withdrawals do not
   // move it: they take the same amount out of `balance` and out of `owed`.
   const ratePerSecond = (ctx.deposit * WAD_PER_UNIT) / BigInt(ctx.runwaySeconds);

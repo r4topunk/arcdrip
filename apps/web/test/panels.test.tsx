@@ -1,5 +1,5 @@
-import type { AccrualPool, MemberRow } from '@arcdrip/sdk';
-import { toRatePerSecond } from '@arcdrip/sdk';
+import type { AccrualPool, MemberRow } from '@sharedarc/sdk';
+import { toRatePerSecond } from '@sharedarc/sdk';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from '@/components/i18n';

@@ -1,7 +1,7 @@
-# ArcDrip threat model
+# SharedArc threat model
 
 > Every row of [`PRD.md`](../PRD.md) §7, in the same order (§1–§14), then threats found during the build that
-> §7 does not list (§15–§19), then what ArcDrip explicitly does **not** protect against (§21).
+> §7 does not list (§15–§19), then what SharedArc explicitly does **not** protect against (§21).
 > "Test" names real tests: Foundry as `Contract.function` under `contracts/test/…`, Vitest by file and test
 > title. Where a test does not exist yet, the row says so instead of implying coverage.
 > Mechanics referenced here are specified in [`SPEC.md`](./SPEC.md).
@@ -15,7 +15,7 @@ no `receive()`; a pool owner may be an EOA, a Safe or a DAO and is trusted with 
 | | |
 |---|---|
 | **Threat** | The pool owner drains USDC that members have already streamed, by sweeping, cancelling, re-weighting to zero, or transferring ownership to themselves twice. |
-| **Why it matters** | This is the only way ArcDrip could lose a contributor real money. Everything else is an availability problem. If the owner can take back earned pay, the product has no reason to exist. |
+| **Why it matters** | This is the only way SharedArc could lose a contributor real money. Everything else is an availability problem. If the owner can take back earned pay, the product has no reason to exist. |
 | **Handling** | `owed` is the reserve and nothing may cross it. `withdrawUnstreamed` and `cancel` both compute the payable amount as `balance − ceilDiv(owed, 1e12)` (`DripPool._unstreamed`) — a **ceiling**, so a fraction of a unit that is still owed is never handed to the owner. Both call `_accrue` first, so the reserve already includes everything streamed up to that block. `setShares(m, 0)` settles `m` before zeroing (`_setShares` → `_settle`), leaving `pending` intact and withdrawable forever, on a cancelled pool too. `setRate(0)` accrues at the old rate first. A member's `pending` can only ever decrease inside `_withdraw` / `withdrawForBatch`, which pay that member's own payout address. Invariant **I4** states it as a property: no owner action decreases any member's `claimable`. |
 | **Residual risk** | None on the past. The owner keeps full control of the future (§2). Dust below 1 unit cannot be withdrawn by the member either — it sits in `owed` and is unreachable by both sides. |
 | **Enforced in** | `DripPool._unstreamed`, `withdrawUnstreamed`, `cancel`, `_setShares`, `setRate`, `_accrue` ordering (SPEC §4.1 R1) |
@@ -27,7 +27,7 @@ no `receive()`; a pool owner may be an EOA, a Safe or a DAO and is trusted with 
 |---|---|
 | **Threat** | The owner pauses, re-weights a contributor down to zero, sweeps the unstreamed balance or cancels the pool, so a member who expected N more months of pay gets nothing. |
 | **Why it matters** | A reviewer will ask "so the owner can just stop paying me?". The honest answer is yes, and pretending otherwise would be the real vulnerability. |
-| **Handling** | **Accepted and documented, by design (D8).** ArcDrip is payroll, not an escrow or a vesting contract: an employer can stop paying. Members are protected for the past, never for the future. There is no cliff, no minimum duration, no timelock on `setRate` / `setShares` / `cancel`. What the protocol does guarantee is transparency: every change emits an event (`RateSet`, `SharesSet`, `UnstreamedWithdrawn`, `Cancelled`), the runway is a public view (`fundedUntil`), and the app shows it. A collective that wants stronger guarantees puts a Safe with a timelock, or a DAO, in the `owner` slot (D4) — the contract treats any address the same. |
+| **Handling** | **Accepted and documented, by design (D8).** SharedArc is payroll, not an escrow or a vesting contract: an employer can stop paying. Members are protected for the past, never for the future. There is no cliff, no minimum duration, no timelock on `setRate` / `setShares` / `cancel`. What the protocol does guarantee is transparency: every change emits an event (`RateSet`, `SharesSet`, `UnstreamedWithdrawn`, `Cancelled`), the runway is a public view (`fundedUntil`), and the app shows it. A collective that wants stronger guarantees puts a Safe with a timelock, or a DAO, in the `owner` slot (D4) — the contract treats any address the same. |
 | **Residual risk** | Full. A malicious owner can reduce the future stream to zero in one transaction. Mitigation is social/organisational (who holds the owner key), not cryptographic. |
 | **Enforced in** | Not a code path; an explicit non-guarantee. Events + `fundedUntil` make it observable. |
 | **Test** | `contracts/test/unit/DripPoolOwnerFunds.t.sol`: `DripPoolOwnerFundsTest.test_Cancel_StopsAccrual`, `test_WithdrawUnstreamed_SweepsFreeFunds`; `contracts/test/unit/DripPoolDeposit.t.sol`: `DripPoolDepositTest.test_SetRate_ZeroPausesAndPreservesAccrued` (shows the future stops, the past does not). |
@@ -138,7 +138,7 @@ no `receive()`; a pool owner may be an EOA, a Safe or a DAO and is trusted with 
 | **Threat** | The streamed token takes a fee on transfer or rebases, so `balance` (credited with the *requested* amount) exceeds what the contract actually received, and the last withdrawals revert. |
 | **Why it matters** | `deposit` credits `balance += amount` and then calls `safeTransferFrom` — it does **not** measure the delta. With a fee-on-transfer token that is an accounting hole. |
 | **Handling** | Out of scope by construction: `usdc` is `immutable`, set once in the constructor, and this deployment points it at Arc's USDC, which is neither fee-on-transfer nor rebasing. `DripPool` is not a generic-token contract and must not be redeployed against one — there is no token registry, no per-pool token and no way to change it. Pre-deploy checklist item: confirm the constructor argument is `0x3600000000000000000000000000000000000000`, and verify on Sourcify so anyone can check it. |
-| **Residual risk** | A third party could deploy this bytecode against a fee-on-transfer token; such a deployment would be broken and is not ArcDrip. If Circle ever made Arc USDC fee-bearing, deposits would over-credit and the tail of the withdrawals would revert on the ERC-20's own balance check. |
+| **Residual risk** | A third party could deploy this bytecode against a fee-on-transfer token; such a deployment would be broken and is not SharedArc. If Circle ever made Arc USDC fee-bearing, deposits would over-credit and the tail of the withdrawals would revert on the ERC-20's own balance check. |
 | **Enforced in** | `immutable usdc`, constructor `ZeroAddress` check, deployment procedure ([`../DEPLOY.md`](../DEPLOY.md)) |
 | **Test** | `contracts/test/unit/DripPoolCreate.t.sol`: `DripPoolCreateTest.test_Constructor_SetsUsdc`, `test_Constructor_RevertsOnZeroToken`. Behaviour against a fee-on-transfer token is **not tested** — it is a documented non-support, not a supported path. |
 
@@ -236,7 +236,7 @@ no `receive()`; a pool owner may be an EOA, a Safe or a DAO and is trusted with 
 | **Enforced in** | `setShares`, `setSharesBatch`, `setPayoutAddress`, `withdrawUnstreamed`, `cancel` |
 | **Test** | `contracts/test/unit/DripPoolGriefing.t.sol`: `DripPoolGriefingTest.test_SetShares_RevertsOnTheSingleton`, `test_SetSharesBatch_RevertsOnTheSingleton`, `test_WithdrawUnstreamed_RevertsOnTheSingleton`, `test_Cancel_RevertsOnTheSingleton`, `test_OwnerSweeps_StillWorkWithARealDestination`; `contracts/test/unit/DripPoolShares.t.sol` and `DripPoolOwnerFunds.t.sol` for the unchanged happy paths. |
 
-## 21. What ArcDrip does not protect against
+## 21. What SharedArc does not protect against
 
 - **A malicious or careless pool owner, going forward.** Pause, re-weight, sweep and cancel are all one
   transaction, with no timelock. Use a Safe or a DAO as `owner` if that matters (§2).
@@ -247,7 +247,7 @@ no `receive()`; a pool owner may be an EOA, a Safe or a DAO and is trusted with 
 - **Direct transfers to the contract.** Permanently stuck (§13).
 - **Sub-wad rounding under a griefer.** Bounded and economically irrelevant, but not zero (§4, SPEC §6.2).
 - **Private-key loss** by a member or an owner. There is no recovery path anywhere in the contract.
-- **Anything about the future value of a stream.** ArcDrip is not an escrow, not vesting, and gives no
+- **Anything about the future value of a stream.** SharedArc is not an escrow, not vesting, and gives no
   guarantee that a pool stays funded.
 
 ## 22. Open gaps in the evidence

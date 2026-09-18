@@ -15,13 +15,13 @@ const description =
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${config.siteUrl}/`),
-  title: { default: 'ArcDrip: collective payroll on Arc', template: '%s · ArcDrip' },
+  title: { default: 'SharedArc: collective payroll on Arc', template: '%s · SharedArc' },
   description,
-  applicationName: 'ArcDrip',
+  applicationName: 'SharedArc',
   openGraph: {
     type: 'website',
-    siteName: 'ArcDrip',
-    title: 'ArcDrip: collective payroll on Arc',
+    siteName: 'SharedArc',
+    title: 'SharedArc: collective payroll on Arc',
     description,
   },
 };

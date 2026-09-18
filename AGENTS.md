@@ -1,4 +1,4 @@
-# AGENTS.md: ArcDrip
+# AGENTS.md: SharedArc
 
 Instructions for AI agents and contributors working in this repo.
 
@@ -26,8 +26,8 @@ cd contracts && forge test --match-contract Gas -vv
 pnpm e2e:dry-run
 pnpm e2e:dry-run --port 8600
 # the web app against a local anvil:
-pnpm --filter @arcdrip/web dev          # http://localhost:3000
-pnpm --filter @arcdrip/web e2e:smoke    # Playwright smoke over the static export
+pnpm --filter @sharedarc/web dev          # http://localhost:3000
+pnpm --filter @sharedarc/web e2e:smoke    # Playwright smoke over the static export
 ```
 
 If a command is not in this list, it is probably not the right command. Never invent a script name; check the
@@ -60,10 +60,10 @@ contracts/          Foundry (solc 0.8.30, evm prague, optimizer 10k runs), forge
   src/interfaces/IDripPool.sol   the full external ABI with NatSpec; the SDK's ABI is generated from it
   script/                 Deploy.s.sol (CREATE2), record-deployment.mjs
   test/unit,fuzz,invariant,gas,fork,mocks,vectors/   see "Test layers" below
-packages/sdk        @arcdrip/sdk    accrual mirror, rate helpers, viem actions, Zod schemas, member discovery,
+packages/sdk        @sharedarc/sdk    accrual mirror, rate helpers, viem actions, Zod schemas, member discovery,
                                     pino logging, optional CCTP leg
-apps/web            @arcdrip/web    "Collective Payroll": Next.js static export, EN/PT-BR, wallet-only
-scripts/            @arcdrip/scripts   e2e-testnet.ts (PRD 8.4) and its offline dry-run harness
+apps/web            @sharedarc/web    "Collective Payroll": Next.js static export, EN/PT-BR, wallet-only
+scripts/            @sharedarc/scripts   e2e-testnet.ts (PRD 8.4) and its offline dry-run harness
 docs/               SPEC.md, THREATS.md, GAS.md, CCTP.md
 deployments/        arc-mainnet.json, arc-testnet.json (committed); anvil-dry-run.json (gitignored)
 site/               index.html + og.png — project page, GitHub Pages root, no build step
@@ -87,8 +87,8 @@ site/               index.html + og.png — project page, GitHub Pages root, no 
   cross-check stops checking anything. A mismatch is resolved against the spec.
 
 Current counts (from a real `pnpm check` run on 2026-09-18 — re-check before trusting an older number):
-contracts **191 passed + 4 skipped** (fork, no `ARC_RPC`) = 195 total; `@arcdrip/sdk` **217**; `@arcdrip/web`
-**74**; `@arcdrip/scripts` **36**. Total 518.
+contracts **191 passed + 4 skipped** (fork, no `ARC_RPC`) = 195 total; `@sharedarc/sdk` **217**; `@sharedarc/web`
+**74**; `@sharedarc/scripts` **36**. Total 518.
 
 ## Conventions
 
@@ -109,7 +109,7 @@ contracts **191 passed + 4 skipped** (fork, no `ARC_RPC`) = 195 total; `@arcdrip
   line length 120.
 - TypeScript: strict, ESM, viem only (no ethers), Zod for every public SDK input and for env/config parsing in
   `scripts/` and `apps/web`. Biome for lint and format.
-- Logging (`@arcdrip/sdk`): pino child logger with a `correlationId` per action (`packages/sdk/src/logger.ts`);
+- Logging (`@sharedarc/sdk`): pino child logger with a `correlationId` per action (`packages/sdk/src/logger.ts`);
   `LOG_LEVEL=info`/`debug` surfaces it in the operator scripts.
 - Tests that need a chain start their own throwaway anvil on a free port with unlocked dev accounts. Never
   hardcode a private key; sign from an unlocked account. Forge cheatcode accounts (`makeAddrAndKey`) are fine in

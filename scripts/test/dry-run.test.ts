@@ -21,7 +21,7 @@ describe.skipIf(!foundry || !built)('e2e dry run on local anvil', () => {
   const lines: string[] = [];
 
   beforeAll(async () => {
-    dir = mkdtempSync(join(tmpdir(), 'arcdrip-dry-run-'));
+    dir = mkdtempSync(join(tmpdir(), 'sharedarc-dry-run-'));
     result = await runLocal({
       deploymentsFile: join(dir, 'anvil-dry-run.json'),
       stateDir: join(dir, 'state'),

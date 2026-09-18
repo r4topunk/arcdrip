@@ -4,7 +4,7 @@
 // waited out. Proof hashes go to deployments/anvil-dry-run.json (gitignored), never to a real record.
 import { existsSync, renameSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { createLogger, getPoolOrNull, newCorrelationId } from '@arcdrip/sdk';
+import { createLogger, getPoolOrNull, newCorrelationId } from '@sharedarc/sdk';
 import { type Address, createPublicClient, createTestClient, createWalletClient, http } from 'viem';
 import {
   type Anvil,

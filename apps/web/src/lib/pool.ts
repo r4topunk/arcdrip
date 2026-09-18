@@ -11,7 +11,7 @@ import {
   type PeriodName,
   type PoolStatus,
   toRatePerSecond,
-} from '@arcdrip/sdk';
+} from '@sharedarc/sdk';
 import type { Address } from 'viem';
 import { parseShares, parseUsdc } from './format';
 

@@ -7,12 +7,12 @@ export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 
 const en = {
-  'app.name': 'ArcDrip',
+  'app.name': 'SharedArc',
   'app.tagline': 'Collective payroll on Arc',
 
   'nav.main': 'Main',
   'nav.skip': 'Skip to content',
-  'nav.home': 'ArcDrip home',
+  'nav.home': 'SharedArc home',
   'nav.pools': 'Pools',
   'nav.docs': 'Docs',
   'nav.project': 'Project page',
@@ -275,7 +275,7 @@ const en = {
   'error.confirm': 'Type CANCEL exactly to confirm.',
 
   'docs.eyebrow': 'Docs',
-  'docs.title': 'How ArcDrip works',
+  'docs.title': 'How SharedArc works',
   'docs.onThisPage': 'On this page',
 
   'footer.tagline': 'A shared USDC stream for collectives. No token, no yield, no fees, no admin key.',
@@ -299,12 +299,12 @@ export type MessageKey = keyof typeof en;
 export type Messages = Record<MessageKey, string>;
 
 const ptBR: Messages = {
-  'app.name': 'ArcDrip',
+  'app.name': 'SharedArc',
   'app.tagline': 'Folha de pagamento coletiva na Arc',
 
   'nav.main': 'Principal',
   'nav.skip': 'Ir para o conteúdo',
-  'nav.home': 'Início do ArcDrip',
+  'nav.home': 'Início do SharedArc',
   'nav.pools': 'Pools',
   'nav.docs': 'Documentação',
   'nav.project': 'Página do projeto',
@@ -568,7 +568,7 @@ const ptBR: Messages = {
   'error.confirm': 'Digite CANCEL exatamente assim para confirmar.',
 
   'docs.eyebrow': 'Documentação',
-  'docs.title': 'Como o ArcDrip funciona',
+  'docs.title': 'Como o SharedArc funciona',
   'docs.onThisPage': 'Nesta página',
 
   'footer.tagline':

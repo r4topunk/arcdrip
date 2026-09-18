@@ -5,7 +5,7 @@ import { loadDocs } from '@/lib/docs';
 export const metadata: Metadata = {
   title: 'Docs',
   description:
-    'How ArcDrip accrual works, the guarantees it gives members and owners, how to plug a Safe or a DAO as owner, and how it compares to Sablier, 0xSplits and the Arc Studio Revenue Router.',
+    'How SharedArc accrual works, the guarantees it gives members and owners, how to plug a Safe or a DAO as owner, and how it compares to Sablier, 0xSplits and the Arc Studio Revenue Router.',
 };
 
 export default function Page() {

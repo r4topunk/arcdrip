@@ -1,4 +1,4 @@
-// @arcdrip/sdk — public entry point (PRD 5).
+// @sharedarc/sdk — public entry point (PRD 5).
 //
 //   constants.ts  chain ids, USDC, DripPool addresses, scales
 //   schemas.ts    Zod, bigint-safe parsing of pools, members and events
@@ -9,7 +9,7 @@
 //   bridge.ts     optional CCTP V2 leg: withdraw on Arc, burn, mint elsewhere
 //   logger.ts     pino with a correlationId per action
 //   abi/          generated from the Foundry artifact; `pnpm sdk:check-abi` keeps it honest
-export const SDK_NAME = '@arcdrip/sdk' as const;
+export const SDK_NAME = '@sharedarc/sdk' as const;
 
 export * from './abi/DripPool.js';
 export * from './actions.js';

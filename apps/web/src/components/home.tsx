@@ -1,6 +1,6 @@
 'use client';
 
-import { createPool, fromRatePerSecond, unitsPerPeriod } from '@arcdrip/sdk';
+import { createPool, fromRatePerSecond, unitsPerPeriod } from '@sharedarc/sdk';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

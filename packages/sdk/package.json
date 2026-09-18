@@ -1,7 +1,7 @@
 {
-  "name": "@arcdrip/sdk",
+  "name": "@sharedarc/sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for ArcDrip: shared USDC streams on Arc (accrual mirror, rate helpers, viem actions)",
+  "description": "TypeScript SDK for SharedArc: shared USDC streams on Arc (accrual mirror, rate helpers, viem actions)",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/r4topunk/arcdrip",
+    "url": "https://github.com/r4topunk/sharedarc",
     "directory": "packages/sdk"
   },
   "exports": {

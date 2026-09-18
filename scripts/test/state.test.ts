@@ -11,7 +11,7 @@ describe('StateStore', () => {
   let dir: string;
   let file: string;
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'arcdrip-state-'));
+    dir = mkdtempSync(join(tmpdir(), 'sharedarc-state-'));
     file = join(dir, '31337.json');
   });
   afterEach(() => {

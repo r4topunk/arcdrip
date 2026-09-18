@@ -1,11 +1,11 @@
-# Como o ArcDrip funciona
+# Como o SharedArc funciona
 
-O ArcDrip é um fluxo de USDC compartilhado para um coletivo: **uma taxa, N shares, uma autonomia ao vivo**. Uma
+O SharedArc é um fluxo de USDC compartilhado para um coletivo: **uma taxa, N shares, uma autonomia ao vivo**. Uma
 pool pré-financiada flui `ratePerSecond` de USDC, dividido entre os membros por shares inteiros e mutáveis.
 Entrar, sair ou mudar de peso no meio do fluxo é uma escrita O(1) que não toca no armazenamento de mais ninguém.
 
 Tudo nesta página é o que o contrato `DripPool` faz de verdade. Os números que correm no app vêm da mesma
-aritmética, espelhada no `@arcdrip/sdk`, então quem vê o próprio saldo encher está vendo a chain, não uma
+aritmética, espelhada no `@sharedarc/sdk`, então quem vê o próprio saldo encher está vendo a chain, não uma
 estimativa.
 
 ## O acúmulo, por inteiro
@@ -87,7 +87,7 @@ continua funcionando em uma pool cancelada.
 
 ## Como se compara
 
-| | ArcDrip | Streams estilo Sablier | Splitters estilo 0xSplits | Revenue Router do Arc Studio |
+| | SharedArc | Streams estilo Sablier | Splitters estilo 0xSplits | Revenue Router do Arc Studio |
 |---|---|---|---|---|
 | Baseado em tempo | sim | sim | não (divide na chegada) | não |
 | Pesos mutáveis | sim, O(1) por mudança | cancelar e recriar N streams | sim | fixos no deploy |

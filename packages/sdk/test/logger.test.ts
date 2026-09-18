@@ -31,9 +31,9 @@ describe('log levels', () => {
     expect(isLogLevel(3)).toBe(false);
   });
 
-  it('reads ARCDRIP_LOG_LEVEL and falls back to silent', () => {
-    expect(envLogLevel({ ARCDRIP_LOG_LEVEL: 'warn' })).toBe('warn');
-    expect(envLogLevel({ ARCDRIP_LOG_LEVEL: 'shout' })).toBe('silent');
+  it('reads SHAREDARC_LOG_LEVEL and falls back to silent', () => {
+    expect(envLogLevel({ SHAREDARC_LOG_LEVEL: 'warn' })).toBe('warn');
+    expect(envLogLevel({ SHAREDARC_LOG_LEVEL: 'shout' })).toBe('silent');
     expect(envLogLevel({})).toBe('silent');
   });
 
@@ -50,7 +50,7 @@ describe('log levels', () => {
     const { lines, stream } = capture();
     createLogger({ level: 'info', destination: stream }).info({ poolId: 1n }, 'created');
     expect(lines).toHaveLength(1);
-    expect(lines[0]).toMatchObject({ msg: 'created', poolId: '1', name: '@arcdrip/sdk' });
+    expect(lines[0]).toMatchObject({ msg: 'created', poolId: '1', name: '@sharedarc/sdk' });
   });
 
   it('respects the level threshold', () => {

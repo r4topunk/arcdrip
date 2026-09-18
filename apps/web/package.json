@@ -1,8 +1,8 @@
 {
-  "name": "@arcdrip/web",
+  "name": "@sharedarc/web",
   "version": "0.0.0",
   "private": true,
-  "description": "ArcDrip web app: Collective Payroll \u2014 create a pool, set shares, deposit, watch runway (static export, EN/PT-BR)",
+  "description": "SharedArc web app: Collective Payroll \u2014 create a pool, set shares, deposit, watch runway (static export, EN/PT-BR)",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "e2e:smoke": "node scripts/e2e-smoke.mjs"
   },
   "dependencies": {
-    "@arcdrip/sdk": "workspace:*",
+    "@sharedarc/sdk": "workspace:*",
     "@tanstack/react-query": "^5.102.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

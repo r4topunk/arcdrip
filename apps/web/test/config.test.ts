@@ -48,10 +48,10 @@ describe('build configuration', () => {
   it('trims trailing slashes from urls so links never double up', () => {
     const c = parseConfig({
       NEXT_PUBLIC_SITE_URL: 'https://example.com/',
-      NEXT_PUBLIC_BASE_PATH: '/arcdrip/',
+      NEXT_PUBLIC_BASE_PATH: '/sharedarc/',
     });
     expect(c.siteUrl).toBe('https://example.com');
-    expect(c.basePath).toBe('/arcdrip');
+    expect(c.basePath).toBe('/sharedarc');
   });
 });
 

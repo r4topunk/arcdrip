@@ -3,7 +3,7 @@
 // written independently from PRD 4.2, so an equal result is evidence and a mismatch is a real defect on one side.
 //
 // The file is produced by another part of the build. When it is missing this suite skips with a message instead of
-// failing: `pnpm --filter '@arcdrip/sdk' test` still has to be meaningful before the contracts land.
+// failing: `pnpm --filter '@sharedarc/sdk' test` still has to be meaningful before the contracts land.
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';

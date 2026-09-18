@@ -10,7 +10,7 @@ import {
   toMemberRows,
   toRatePerSecond,
   UNBOUNDED_RUNWAY,
-} from '@arcdrip/sdk';
+} from '@sharedarc/sdk';
 import { describe, expect, it } from 'vitest';
 import { runwayView } from '@/lib/format';
 import { buildRate, buildShares, isOwner, isPendingOwner, ownRow, planBatch, STATUS_TONE } from '@/lib/pool';

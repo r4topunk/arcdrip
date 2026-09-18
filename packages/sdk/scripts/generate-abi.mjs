@@ -5,8 +5,8 @@
 // src/abi/ holds generated files only (biome skips it).
 //
 //   pnpm contracts:abi                          # forge build + write src/abi/DripPool.ts
-//   pnpm --filter @arcdrip/sdk generate:abi     # write it from the current artifact (run `forge build` first)
-//   pnpm --filter @arcdrip/sdk check:abi        # exit 1 if the committed module does not match the artifact
+//   pnpm --filter @sharedarc/sdk generate:abi     # write it from the current artifact (run `forge build` first)
+//   pnpm --filter @sharedarc/sdk check:abi        # exit 1 if the committed module does not match the artifact
 //
 // --check is strict as soon as either side exists: it fails on a mismatch, on an artifact without a committed
 // module, and on a committed module without an artifact. Only when neither exists (before DripPool.sol is written)

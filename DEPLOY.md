@@ -1,4 +1,4 @@
-# DEPLOY: ArcDrip (DripPool) on Arc
+# DEPLOY: SharedArc (DripPool) on Arc
 
 Runbook for the **human operator**. Agents never run the testnet or mainnet steps: those need keys and spend real USDC (testnet USDC is free from the faucet). Every step that sends a transaction is marked **[SENDS]**; everything else is read-only or local.
 
@@ -40,7 +40,7 @@ forge verify-contract $DRIP_POOL src/DripPool.sol:DripPool --chain-id 5042 --ver
 | Explorer | `https://explorer.arc.io` (Blockscout; its API sits behind a Cloudflare challenge, so verification goes to Sourcify) |
 | USDC | `0x3600000000000000000000000000000000000000`, the 6-decimal ERC-20 view of the native gas token. The native balance is the same USDC in an 18-decimal view: never add the two |
 | CREATE2 deployer | `0x4e59b44847b379578588920cA78FbF26c0B4956C` (present on both Arc networks and on every anvil) |
-| Salt | `keccak256("arcdrip.v1")` = `0xf565c9179457d16efba5e73e31ac6a25a183c67a440009e4dd04baf336278b6d` |
+| Salt | `keccak256("arcdrip.v1")` = `0xf565c9179457d16efba5e73e31ac6a25a183c67a440009e4dd04baf336278b6d`. The project was called ArcDrip until 2026-09-18 (renamed to SharedArc), hence the label; it stays as is because the salt fixes the address |
 | Constructor | `DripPool(usdc)` — one argument, stored as an immutable. The same argument on both networks gives the same address |
 | Immutable | No owner over the contract, no upgrade, no global pause (PRD D7/D14). A mistake means a new deployment with a new salt label (see Rollback) |
 | Mainnet scope | The `DripPool` singleton only. Pools are created afterwards by anyone, from the site or with `cast` |
@@ -265,7 +265,7 @@ What it does, all locally:
 4. checks the freeze and the no-back-pay rule against chain state, and refuses to finish if `owed` ever exceeds the balance;
 5. prints every transaction hash with its gas and its USDC fee.
 
-`--rpc` only accepts a loopback URL and every local helper re-checks `eth_chainId == 31337`, so a dry run cannot touch a real network. The dry run is also a test: `pnpm --filter @arcdrip/scripts test` runs it against a temporary directory and asserts the twelve proof transactions, the freeze, the batch and the idempotent re-run.
+`--rpc` only accepts a loopback URL and every local helper re-checks `eth_chainId == 31337`, so a dry run cannot touch a real network. The dry run is also a test: `pnpm --filter @sharedarc/scripts test` runs it against a temporary directory and asserts the twelve proof transactions, the freeze, the batch and the idempotent re-run.
 
 ## Rollback and failure modes
 
@@ -282,8 +282,8 @@ What it does, all locally:
 
 ## Hosting (GitHub Pages)
 
-`.github/workflows/pages.yml` publishes `site/` at https://r4topunk.github.io/arcdrip/ and, **only once
-`deployments/arc-mainnet.json` has a `DripPool.address`**, the `apps/web` static export at `/arcdrip/app/`, built
+`.github/workflows/pages.yml` publishes `site/` at https://r4topunk.github.io/sharedarc/ and, **only once
+`deployments/arc-mainnet.json` has a `DripPool.address`**, the `apps/web` static export at `/sharedarc/app/`, built
 against that address and `deployBlock`. The same JSON is published as `deployment.json`; the landing reads it to
 flip its status card to "Live on Arc mainnet", link the explorer address, deploy tx and Sourcify, and show the
 "Open the app" buttons. So the commit that records the deployment (`node script/record-deployment.mjs 5042`) is

@@ -2,7 +2,7 @@
 // every line so a single user action can be followed across reads, simulations and transactions.
 //
 // A library must be quiet by default: the level is `silent` unless the host sets one explicitly or exports
-// `ARCDRIP_LOG_LEVEL`. Nothing here ever logs an amount the caller did not already pass in, and never a key.
+// `SHAREDARC_LOG_LEVEL`. Nothing here ever logs an amount the caller did not already pass in, and never a key.
 import pino, { type DestinationStream, type Logger, type LoggerOptions } from 'pino';
 
 export type { Logger };
@@ -15,14 +15,14 @@ export function isLogLevel(value: unknown): value is LogLevel {
   return typeof value === 'string' && (LOG_LEVELS as readonly string[]).includes(value);
 }
 
-/** Level from `ARCDRIP_LOG_LEVEL`, or `silent` when unset or unrecognised. */
+/** Level from `SHAREDARC_LOG_LEVEL`, or `silent` when unset or unrecognised. */
 export function envLogLevel(env: Record<string, string | undefined> = process.env): LogLevel {
-  const raw = env.ARCDRIP_LOG_LEVEL;
+  const raw = env.SHAREDARC_LOG_LEVEL;
   return isLogLevel(raw) ? raw : 'silent';
 }
 
 export type CreateLoggerOptions = {
-  /** Default: `ARCDRIP_LOG_LEVEL`, else `silent`. */
+  /** Default: `SHAREDARC_LOG_LEVEL`, else `silent`. */
   level?: LogLevel;
   /** Bound to every line as `correlationId`. Generated per action when the caller does not supply one. */
   correlationId?: string;
@@ -40,7 +40,7 @@ export type CreateLoggerOptions = {
  */
 export function createLogger(options: CreateLoggerOptions = {}): Logger {
   const { level = envLogLevel(), correlationId, bindings, pino: extra, destination } = options;
-  const base: Record<string, unknown> = { name: '@arcdrip/sdk', ...bindings };
+  const base: Record<string, unknown> = { name: '@sharedarc/sdk', ...bindings };
   if (correlationId !== undefined) base.correlationId = correlationId;
   const pinoOptions: LoggerOptions = {
     ...extra,

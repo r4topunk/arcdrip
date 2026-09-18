@@ -1,11 +1,11 @@
-# How ArcDrip works
+# How SharedArc works
 
-ArcDrip is one shared USDC stream for a collective: **one rate, N shares, one live runway**. A pre-funded pool
+SharedArc is one shared USDC stream for a collective: **one rate, N shares, one live runway**. A pre-funded pool
 streams `ratePerSecond` USDC, split among members by mutable integer shares. Joining, leaving or re-weighting
 mid-stream is one O(1) write that touches nobody else's storage.
 
 Everything on this page is what the `DripPool` contract actually does. The numbers ticking in the app come from
-the same arithmetic, mirrored in `@arcdrip/sdk`, so a member watching their balance fill is watching the chain,
+the same arithmetic, mirrored in `@sharedarc/sdk`, so a member watching their balance fill is watching the chain,
 not an estimate.
 
 ## The accrual, in full
@@ -86,7 +86,7 @@ working on a cancelled pool.
 
 ## How it compares
 
-| | ArcDrip | Sablier-style streams | 0xSplits-style splitters | Arc Studio Revenue Router |
+| | SharedArc | Sablier-style streams | 0xSplits-style splitters | Arc Studio Revenue Router |
 |---|---|---|---|---|
 | Time-based | yes | yes | no (splits on arrival) | no |
 | Mutable weights | yes, O(1) per change | cancel and recreate N streams | yes | fixed at deploy |

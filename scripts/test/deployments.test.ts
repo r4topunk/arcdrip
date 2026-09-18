@@ -36,7 +36,7 @@ describe('writeRunRecord', () => {
   let dir: string;
   let file: string;
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'arcdrip-record-'));
+    dir = mkdtempSync(join(tmpdir(), 'sharedarc-record-'));
     file = join(dir, 'anvil-dry-run.json');
     writeFileSync(
       file,

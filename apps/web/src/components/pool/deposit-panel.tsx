@@ -1,6 +1,6 @@
 'use client';
 
-import { type AccrualPool, approveAndDeposit, WAD_PER_UNIT } from '@arcdrip/sdk';
+import { type AccrualPool, approveAndDeposit, WAD_PER_UNIT } from '@sharedarc/sdk';
 import { useId, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { ErrorNote, RequireWallet } from '@/components/app-states';

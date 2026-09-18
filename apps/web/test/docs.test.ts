@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { markdownTitle, renderMarkdown, resolveHref, slugify } from '@/lib/markdown';
 
-const opts = { basePath: '/arcdrip', repoUrl: 'https://github.com/r4topunk/arcdrip' };
+const opts = { basePath: '/sharedarc', repoUrl: 'https://github.com/r4topunk/sharedarc' };
 const content = (locale: string) =>
   readFileSync(path.join(import.meta.dirname, '..', 'content', locale, 'docs.md'), 'utf8');
 
@@ -32,10 +32,10 @@ describe('markdown rendering', () => {
   });
 
   it('rewrites links: site paths get the basePath, repo files point at the repository', () => {
-    expect(resolveHref('/pool/', opts)).toEqual({ href: '/arcdrip/pool/', external: false });
+    expect(resolveHref('/pool/', opts)).toEqual({ href: '/sharedarc/pool/', external: false });
     expect(resolveHref('#faq', opts)).toEqual({ href: '#faq', external: false });
     expect(resolveHref('docs/SPEC.md', opts)).toEqual({
-      href: 'https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md',
+      href: 'https://github.com/r4topunk/sharedarc/blob/main/docs/SPEC.md',
       external: true,
     });
     expect(resolveHref('https://arc.io', opts).external).toBe(true);

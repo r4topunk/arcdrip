@@ -3,20 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title id="doc-title">ArcDrip: one USDC stream, split by shares</title>
+<title id="doc-title">SharedArc: one USDC stream, split by shares</title>
 <meta id="doc-desc" name="description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway. Join, leave or re-weight mid-stream without touching anyone else.">
-<meta property="og:title" content="ArcDrip: one USDC stream, split by shares">
+<meta property="og:title" content="SharedArc: one USDC stream, split by shares">
 <meta property="og:description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://r4topunk.github.io/arcdrip/">
-<meta property="og:image" content="https://r4topunk.github.io/arcdrip/og.png">
+<meta property="og:url" content="https://r4topunk.github.io/sharedarc/">
+<meta property="og:image" content="https://r4topunk.github.io/sharedarc/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="ArcDrip: one USDC stream, split by shares, every second. A pool on Arc streams to four members by weight.">
+<meta property="og:image:alt" content="SharedArc: one USDC stream, split by shares, every second. A pool on Arc streams to four members by weight.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ArcDrip: one USDC stream, split by shares">
+<meta name="twitter:title" content="SharedArc: one USDC stream, split by shares">
 <meta name="twitter:description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway.">
-<meta name="twitter:image" content="https://r4topunk.github.io/arcdrip/og.png">
+<meta name="twitter:image" content="https://r4topunk.github.io/sharedarc/og.png">
 <meta name="theme-color" content="#0A0C0F">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230A0C0F'/><path d='M5 16h7c5 0 6-8 15-8' stroke='%237FE0B8' stroke-width='3' fill='none'/><path d='M12 16h15' stroke='%237FE0B8' stroke-opacity='.6' stroke-width='3'/><path d='M5 16h7c5 0 6 8 15 8' stroke='%237FE0B8' stroke-opacity='.35' stroke-width='3' fill='none'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -264,9 +264,9 @@ pre.run .c{color:var(--dim)}
 <header class="nav">
   <div class="wrap">
     <div class="nav-left">
-      <a class="brand" href="#top" aria-label="ArcDrip home">
+      <a class="brand" href="#top" aria-label="SharedArc home">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7FE0B8" stroke-width="2" aria-hidden="true"><path d="M2 12h6c4 0 5-7 14-7"/><path d="M8 12h14" opacity=".6"/><path d="M2 12h6c4 0 5 7 14 7" opacity=".35"/></svg>
-        ArcDrip
+        SharedArc
       </a>
       <span class="nav-sub" data-i18n="navSub">shared USDC stream · Arc</span>
     </div>
@@ -276,7 +276,7 @@ pre.run .c{color:var(--dim)}
       <a href="#math" data-i18n="navMath">math</a>
       <a href="#guarantees" data-i18n="navGuar">guarantees</a>
       <a href="#proof" data-i18n="navProof">proof</a>
-      <a class="gh" href="https://github.com/r4topunk/arcdrip">github</a>
+      <a class="gh" href="https://github.com/r4topunk/sharedarc">github</a>
       <div class="lang" role="group" aria-label="Language">
         <button type="button" id="lang-en" aria-pressed="true">EN</button>
         <button type="button" id="lang-pt" aria-pressed="false">PT</button>
@@ -295,11 +295,11 @@ pre.run .c{color:var(--dim)}
           <h1 id="h1" data-i18n="h1">One stream.<br><span class="dim">Split by shares,</span><br>every second.</h1>
         </div>
         <div class="r">
-          <p class="lead" data-i18n="lead">ArcDrip pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.</p>
+          <p class="lead" data-i18n="lead">SharedArc pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.</p>
           <div class="btns">
             <a class="btn primary" href="#timeline" data-i18n="ctaHow">See how it splits</a>
             <a class="btn" href="app/" data-live hidden data-i18n="ctaApp">Open the app</a>
-            <a class="btn" href="https://github.com/r4topunk/arcdrip" data-i18n="ctaGithub">View on GitHub</a>
+            <a class="btn" href="https://github.com/r4topunk/sharedarc" data-i18n="ctaGithub">View on GitHub</a>
           </div>
         </div>
       </div>
@@ -377,7 +377,7 @@ pre.run .c{color:var(--dim)}
           <span class="kicker" data-i18n="k01">01 / the problem</span>
           <h2 id="h-problem" data-i18n="problemH2">Paying a team onchain today means picking a compromise.</h2>
         </div>
-        <p class="body" data-i18n="problemP">Streams know about time but not about teams. Splitters know about teams but not about time. Manual transfers know about neither. ArcDrip is the merge: a split that happens <em>over time</em>.</p>
+        <p class="body" data-i18n="problemP">Streams know about time but not about teams. Splitters know about teams but not about time. Manual transfers know about neither. SharedArc is the merge: a split that happens <em>over time</em>.</p>
       </div>
       <div class="probs">
         <div class="card prob">
@@ -419,7 +419,7 @@ pre.run .c{color:var(--dim)}
             <g fill="#7FE0B8"><path d="M124 94C180 94 190 40 236 40V58C190 58 180 97 124 97Z" opacity=".5"/><path d="M124 97C180 97 190 84 236 84V96C190 96 180 99 124 99Z" opacity=".4"/><path d="M124 99C180 99 190 122 236 122V134C190 134 180 102 124 102Z" opacity=".3"/><path d="M124 102C180 102 190 162 236 162V168C190 168 180 105 124 105Z" opacity=".22"/></g>
             <text x="150" y="190" text-anchor="middle" fill="#7FE0B8" style="font:400 11px var(--mono)" data-i18n="svgOnePool">one pool · one rate · shares over time</text>
           </svg>
-          <div class="tx"><span class="lb">ARCDRIP</span><span class="ti" data-i18n="p4t">A split that streams.</span><span class="de" data-i18n="p4d">One balance and one runway. Re-weighting is one write. Anyone can press pay, and money always lands at the member’s address.</span></div>
+          <div class="tx"><span class="lb">SHAREDARC</span><span class="ti" data-i18n="p4t">A split that streams.</span><span class="de" data-i18n="p4d">One balance and one runway. Re-weighting is one write. Anyone can press pay, and money always lands at the member’s address.</span></div>
         </div>
       </div>
     </div>
@@ -551,7 +551,7 @@ pre.run .c{color:var(--dim)}
           <div><b>18 dp</b><span data-i18n="kv2">Kept in wad internally, so 1 USDC a month never rounds to zero.</span></div>
           <div><b>floor ↓</b><span data-i18n="kv3">Every rounding favours the pool, never a member.</span></div>
         </div>
-        <a href="https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md" data-i18n="specLink">Full spec and the Solidity →</a>
+        <a href="https://github.com/r4topunk/sharedarc/blob/main/docs/SPEC.md" data-i18n="specLink">Full spec and the Solidity →</a>
       </div>
     </div>
   </section>
@@ -596,7 +596,7 @@ pre.run .c{color:var(--dim)}
             <thead><tr><th scope="col" data-i18n="colPart">PART</th><th scope="col" class="hide-m" data-i18n="colWhat">WHAT IT DOES</th><th scope="col" data-i18n="colTests">TESTS</th></tr></thead>
             <tbody>
               <tr><th scope="row">DripPool.sol</th><td class="hide-m" data-i18n="part1">Immutable singleton holding many pools: index accrual, freeze on empty, pull withdrawals, blocklist-safe batch payout, cancel, two-step ownership</td><td class="n" data-i18n="part1n">182 (4 fork skipped)</td></tr>
-              <tr><th scope="row">@arcdrip/sdk</th><td class="hide-m" data-i18n="part2">viem actions, Zod schemas, the accrual math mirrored offchain, member discovery from logs</td><td class="n" data-i18n="part2n">217</td></tr>
+              <tr><th scope="row">@sharedarc/sdk</th><td class="hide-m" data-i18n="part2">viem actions, Zod schemas, the accrual math mirrored offchain, member discovery from logs</td><td class="n" data-i18n="part2n">217</td></tr>
               <tr><th scope="row">apps/web</th><td class="hide-m" data-i18n="part3">“Collective Payroll”: create, fund, weight, watch, pay everyone. Static export, EN and PT-BR</td><td class="n" data-i18n="part3n">see repo</td></tr>
               <tr><th scope="row">docs/</th><td class="hide-m" data-i18n="part4">Spec, threat model, measured gas table and the CCTP finding for Arc mainnet</td><td class="n">—</td></tr>
             </tbody>
@@ -617,14 +617,14 @@ pre.run .c{color:var(--dim)}
         </div>
       </div>
       <ul class="docs">
-        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/README.md"><span>README</span><span>README.md</span></a></li>
-        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md"><span data-i18n="docSpec">Spec</span><span>docs/SPEC.md</span></a></li>
-        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/THREATS.md"><span data-i18n="docThreats">Threat model</span><span>docs/THREATS.md</span></a></li>
-        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/GAS.md"><span data-i18n="docGas">Gas costs</span><span>docs/GAS.md</span></a></li>
-        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/CCTP.md"><span data-i18n="docCctp">CCTP on Arc</span><span>docs/CCTP.md</span></a></li>
-        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/contracts/src/DripPool.sol"><span data-i18n="docContract">Contract</span><span>DripPool.sol</span></a></li>
-        <li><a href="https://github.com/r4topunk/arcdrip/tree/main/packages/sdk"><span>SDK</span><span>packages/sdk</span></a></li>
-        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/LICENSE"><span data-i18n="docLicense">License (MIT)</span><span>LICENSE</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/blob/main/README.md"><span>README</span><span>README.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/blob/main/docs/SPEC.md"><span data-i18n="docSpec">Spec</span><span>docs/SPEC.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/blob/main/docs/THREATS.md"><span data-i18n="docThreats">Threat model</span><span>docs/THREATS.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/blob/main/docs/GAS.md"><span data-i18n="docGas">Gas costs</span><span>docs/GAS.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/blob/main/docs/CCTP.md"><span data-i18n="docCctp">CCTP on Arc</span><span>docs/CCTP.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/blob/main/contracts/src/DripPool.sol"><span data-i18n="docContract">Contract</span><span>DripPool.sol</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/tree/main/packages/sdk"><span>SDK</span><span>packages/sdk</span></a></li>
+        <li><a href="https://github.com/r4topunk/sharedarc/blob/main/LICENSE"><span data-i18n="docLicense">License (MIT)</span><span>LICENSE</span></a></li>
       </ul>
     </div>
   </section>
@@ -641,19 +641,19 @@ pre.run .c{color:var(--dim)}
       <div class="cta">
         <h2 id="h-cta" data-i18n="ctaH2">Open the tap.<br><span class="dim">Shares do the rest.</span></h2>
         <div class="r">
-          <pre class="run"><span class="p">$</span> git clone https://github.com/r4topunk/arcdrip
-<span class="p">$</span> cd arcdrip &amp;&amp; pnpm install
+          <pre class="run"><span class="p">$</span> git clone https://github.com/r4topunk/sharedarc
+<span class="p">$</span> cd sharedarc &amp;&amp; pnpm install
 <span class="p">$</span> pnpm check            <span class="c"># build + tests + lint</span>
-<span class="p">$</span> pnpm --filter @arcdrip/web dev</pre>
+<span class="p">$</span> pnpm --filter @sharedarc/web dev</pre>
           <div class="btns">
-            <a class="btn primary" href="https://github.com/r4topunk/arcdrip" data-i18n="ctaGithub">View on GitHub</a>
+            <a class="btn primary" href="https://github.com/r4topunk/sharedarc" data-i18n="ctaGithub">View on GitHub</a>
             <a class="btn" href="app/" data-live hidden data-i18n="ctaApp">Open the app</a>
-            <a class="btn" href="https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md" data-i18n="ctaSpec">Read the spec</a>
+            <a class="btn" href="https://github.com/r4topunk/sharedarc/blob/main/docs/SPEC.md" data-i18n="ctaSpec">Read the spec</a>
           </div>
         </div>
       </div>
       <footer class="foot">
-        <span data-i18n="footL">ArcDrip · MIT · experimental, not externally audited</span>
+        <span data-i18n="footL">SharedArc · MIT · experimental, not externally audited</span>
         <span data-i18n="footR">No token, no fees, no admin key</span>
       </footer>
     </div>
@@ -662,14 +662,14 @@ pre.run .c{color:var(--dim)}
 
 <script>
 (() => {
-  const STORAGE_KEY = 'arcdrip:lang';
+  const STORAGE_KEY = 'sharedarc:lang';
   const I18N = {
     en: {
       skip:'Skip to the problem', navSub:'shared USDC stream · Arc',
       navProblem:'problem', navHow:'how it works', navMath:'math', navGuar:'guarantees', navProof:'proof',
       kicker:'▍ collective payroll, streamed',
       h1:'One stream.<br><span class="dim">Split by shares,</span><br>every second.',
-      lead:'ArcDrip pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.',
+      lead:'SharedArc pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.',
       ctaHow:'See how it splits', ctaGithub:'View on GitHub', ctaSpec:'Read the spec', ctaApp:'Open the app',
       statusLiveLine:'Live on Arc mainnet',
       statusLiveP:'DripPool is deployed on Arc mainnet and the app talks to it directly from your wallet: no server, no indexer. Proof transactions fill in below as the proof pools run. Every wallet in the proof run belongs to the author.',
@@ -678,7 +678,7 @@ pre.run .c{color:var(--dim)}
       svgPool:'POOL', svgUnstreamed:'USDC unstreamed', svgRunway:'RUNWAY', payBtn:'Pay everyone',
       heroNote:'Example numbers, not a live pool. The ticking uses the same accrual math as the contract.',
       k01:'01 / the problem', problemH2:'Paying a team onchain today means picking a compromise.',
-      problemP:'Streams know about time but not about teams. Splitters know about teams but not about time. Manual transfers know about neither. ArcDrip is the merge: a split that happens <em>over time</em>.',
+      problemP:'Streams know about time but not about teams. Splitters know about teams but not about time. Manual transfers know about neither. SharedArc is the merge: a split that happens <em>over time</em>.',
       svgMissed:'missed', svgRecreate:'re-weight = cancel ×4, recreate ×4', svgInstant:'instant · no clock · no runway', svgOnePool:'one pool · one rate · shares over time',
       p1l:'MANUAL TRANSFERS', p1t:'Someone signs every period.', p1d:'Miss one and payroll is late. Amounts live in a spreadsheet. Runway is a guess.',
       p2l:'ONE STREAM PER PERSON', p2t:'N streams, N balances.', p2d:'Changing one weight means rebuilding every stream. The treasury’s runway is scattered across N deposits.',
@@ -720,8 +720,8 @@ pre.run .c{color:var(--dim)}
       docSpec:'Spec', docThreats:'Threat model', docGas:'Gas costs', docCctp:'CCTP on Arc', docContract:'Contract', docLicense:'License (MIT)',
       arc1:'USDC to withdraw. On Arc, gas is paid in USDC.', arc2:'Finality, so the live ticker and the chain agree.', arc3k:'1 asset', arc3:'Treasury, salary and gas are all native USDC.', arc4:'As of September 2026, no Sablier, Superfluid or 0xSplits on Arc.',
       ctaH2:'Open the tap.<br><span class="dim">Shares do the rest.</span>',
-      footL:'ArcDrip · MIT · experimental, not externally audited', footR:'No token, no fees, no admin key',
-      title:'ArcDrip: one USDC stream, split by shares',
+      footL:'SharedArc · MIT · experimental, not externally audited', footR:'No token, no fees, no admin key',
+      title:'SharedArc: one USDC stream, split by shares',
       desc:'A shared USDC stream for collectives on Arc: one rate, N shares, live runway. Join, leave or re-weight mid-stream without touching anyone else.',
       // dynamic
       names:['maintainer','design','infra','docs'], perMo:'/mo', removed:'removed · accrued stays', out:'out',
@@ -733,7 +733,7 @@ pre.run .c{color:var(--dim)}
       navProblem:'problema', navHow:'como funciona', navMath:'matemática', navGuar:'garantias', navProof:'provas',
       kicker:'▍ folha de pagamento coletiva, em fluxo',
       h1:'Um fluxo.<br><span class="dim">Dividido por shares,</span><br>a cada segundo.',
-      lead:'O ArcDrip paga um time inteiro a partir de uma pool pré-financiada. Entra uma taxa; as shares decidem quem recebe quanto. Mude a share de alguém e todos são repesados a partir daquele segundo — nada do que já foi ganho se move.',
+      lead:'O SharedArc paga um time inteiro a partir de uma pool pré-financiada. Entra uma taxa; as shares decidem quem recebe quanto. Mude a share de alguém e todos são repesados a partir daquele segundo — nada do que já foi ganho se move.',
       ctaHow:'Ver como divide', ctaGithub:'Ver no GitHub', ctaSpec:'Ler a especificação', ctaApp:'Abrir o app',
       statusLiveLine:'No ar na mainnet da Arc',
       statusLiveP:'O DripPool está na mainnet da Arc e o app fala com ele direto da sua carteira: sem servidor, sem indexador. As transações de prova entram abaixo conforme as pools de prova rodam. Todas as carteiras da prova pertencem ao autor.',
@@ -742,7 +742,7 @@ pre.run .c{color:var(--dim)}
       svgPool:'POOL', svgUnstreamed:'USDC não distribuídos', svgRunway:'AUTONOMIA', payBtn:'Pagar todos',
       heroNote:'Números de exemplo, não é um pool real. A contagem usa a mesma matemática de acúmulo do contrato.',
       k01:'01 / o problema', problemH2:'Pagar um time onchain hoje é escolher uma concessão.',
-      problemP:'Fluxos entendem de tempo, mas não de times. Splitters entendem de times, mas não de tempo. Transferências manuais não entendem de nenhum dos dois. O ArcDrip junta os dois: uma divisão que acontece <em>ao longo do tempo</em>.',
+      problemP:'Fluxos entendem de tempo, mas não de times. Splitters entendem de times, mas não de tempo. Transferências manuais não entendem de nenhum dos dois. O SharedArc junta os dois: uma divisão que acontece <em>ao longo do tempo</em>.',
       svgMissed:'esquecido', svgRecreate:'repesar = cancelar ×4, recriar ×4', svgInstant:'instantâneo · sem relógio · sem autonomia', svgOnePool:'uma pool · uma taxa · shares no tempo',
       p1l:'TRANSFERÊNCIAS MANUAIS', p1t:'Alguém assina a cada período.', p1d:'Esqueceu uma, a folha atrasa. Os valores vivem numa planilha. A autonomia é um chute.',
       p2l:'UM FLUXO POR PESSOA', p2t:'N fluxos, N saldos.', p2d:'Mudar um peso significa reconstruir todos os fluxos. A autonomia do tesouro fica espalhada em N depósitos.',
@@ -784,8 +784,8 @@ pre.run .c{color:var(--dim)}
       docSpec:'Especificação', docThreats:'Modelo de ameaças', docGas:'Custos de gas', docCctp:'CCTP na Arc', docContract:'Contrato', docLicense:'Licença (MIT)',
       arc1:'USDC para sacar. Na Arc, o gas é pago em USDC.', arc2:'De finalidade: o contador ao vivo e a chain concordam.', arc3k:'1 ativo', arc3:'Tesouro, salário e gas são todos USDC nativo.', arc4:'Em setembro de 2026, ainda não há Sablier, Superfluid ou 0xSplits na Arc.',
       ctaH2:'Abra a torneira.<br><span class="dim">As shares fazem o resto.</span>',
-      footL:'ArcDrip · MIT · experimental, sem auditoria externa', footR:'Sem token, sem taxas, sem chave admin',
-      title:'ArcDrip: um fluxo de USDC, dividido por shares',
+      footL:'SharedArc · MIT · experimental, sem auditoria externa', footR:'Sem token, sem taxas, sem chave admin',
+      title:'SharedArc: um fluxo de USDC, dividido por shares',
       desc:'Um fluxo de USDC compartilhado para coletivos na Arc: uma taxa, N shares, autonomia ao vivo. Entre, saia ou repese no meio do fluxo sem tocar em mais ninguém.',
       names:['mantenedor','design','infra','docs'], perMo:'/mês', removed:'removido · acumulado fica', out:'fora',
       paid:'pago {x} USDC · 1 tx', payHint:'withdrawForBatch · 1 tx', paused:'pausado', left:'{x} USDC restantes', runway:'autonomia {x}',

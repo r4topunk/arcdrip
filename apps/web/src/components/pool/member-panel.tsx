@@ -1,6 +1,6 @@
 'use client';
 
-import { type MemberRow, setPayoutAddress } from '@arcdrip/sdk';
+import { type MemberRow, setPayoutAddress } from '@sharedarc/sdk';
 import { useId, useState } from 'react';
 import { type Address, isAddress, zeroAddress } from 'viem';
 import { AddressLink, ErrorNote } from '@/components/app-states';

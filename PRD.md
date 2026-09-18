@@ -1,4 +1,4 @@
-# ArcDrip — Product Requirements Document
+# SharedArc — Product Requirements Document
 
 Version 1.0 · 2026-09-18 · Owner: r4to · Status: approved, ready for build
 Target: Arc Microgrants (DoraHacks), deadline 2026-10-14 23:59 ET. Must be live on Arc mainnet with a public repo.
@@ -9,7 +9,7 @@ This document is self-contained. A fresh session must be able to build the whole
 
 ## 0. TL;DR
 
-**ArcDrip** is a shared USDC stream for collectives: **one rate, N shares, live runway**. A pre-funded pool pays `ratePerSecond` USDC, split among members by mutable integer shares. Joining, leaving or re-weighting mid-stream is one O(1) write that touches nobody else (accumulated-index accounting). When the pool runs dry the stream freezes by itself and resumes on the next deposit; it can never owe more than it holds. The owner can never touch what members have already earned.
+**SharedArc** is a shared USDC stream for collectives: **one rate, N shares, live runway**. A pre-funded pool pays `ratePerSecond` USDC, split among members by mutable integer shares. Joining, leaving or re-weighting mid-stream is one O(1) write that touches nobody else (accumulated-index accounting). When the pool runs dry the stream freezes by itself and resumes on the next deposit; it can never owe more than it holds. The owner can never touch what members have already earned.
 
 Onchain it is one immutable singleton, `DripPool`, holding many pools. Offchain it is a TypeScript SDK that mirrors the accrual math (so a UI ticks per second without RPC calls) and a static web app, **Collective Payroll**: create a pool, set members and shares, deposit, watch balances fill, see "runway: 23 days", press "Pay everyone".
 
@@ -22,11 +22,11 @@ Deliverables: `contracts/` (Foundry), `packages/sdk`, `apps/web` (static Next.js
 ### 1.1 Problem
 A collective (DAO, co-op, open-source team, agent swarm) paying contributors has two bad options today. Discrete transfers: someone must remember, sign, and get the amounts right every period. Per-recipient streams (Sablier-style): re-weighting means cancelling and recreating N streams, and the treasury's remaining runway is spread over N balances. Splitters (0xSplits-style) divide what arrives, instantly, with no notion of time.
 
-### 1.2 What ArcDrip changes
+### 1.2 What SharedArc changes
 One pool, one rate, one balance, one runway number. Shares are relative weights; changing one member's weight re-prices everyone from that second onward without touching their storage. What a member has accrued is theirs: removal, re-weighting, pause and cancel never reduce it.
 
 ### 1.3 Why Arc specifically
-| Arc property | Use in ArcDrip |
+| Arc property | Use in SharedArc |
 |---|---|
 | Gas paid in USDC, 20 gwei floor | A member holding only their payroll can withdraw; a withdrawal costs about 0.002 USDC |
 | USDC is native and an ERC-20 at `0x3600000000000000000000000000000000000000` (6 decimals) | Treasury, payroll and gas are the same asset |
@@ -40,7 +40,7 @@ One pool, one rate, one balance, one runway number. Shares are relative weights;
 
 ### 2.1 In scope (v1)
 - `DripPool.sol`: immutable singleton, many pools, per-pool owner, accumulated-index streaming, freeze-on-empty, pull withdrawals with permissionless push-to-member, cancel, unstreamed recovery.
-- `@arcdrip/sdk`: viem actions, Zod schemas, offchain accrual mirror (`claimable`, `runway`), member discovery from logs, rate helpers.
+- `@sharedarc/sdk`: viem actions, Zod schemas, offchain accrual mirror (`claimable`, `runway`), member discovery from logs, rate helpers.
 - `apps/web`: Collective Payroll reference app.
 - Docs: README, SPEC, THREATS, GAS, DEPLOY, CHECKLIST, SUBMISSION, AGENTS.md; project page.
 
@@ -75,7 +75,7 @@ Copy structure and tooling. Do not copy business logic.
 | D8 | Pause = `setRate(0)`. Remove = `setShares(m, 0)`, accrued stays withdrawable forever. `cancel` returns only the unstreamed part. `withdrawUnstreamed` bounded by `balance − owed`. Optional `startTime`. No cliff | Owner never touches earned funds |
 | D9 | Internal amounts in **wad** = USDC units × 1e12 (18 decimals). Free integer shares, not bps | 1 USDC/month must not round to zero; adding a member is one write |
 | D10 | Deliverables: contracts + SDK + web + docs + mainnet proof. No keeper | No new unhosted process |
-| D11 | Name ArcDrip, folder `arc-drip/`, repo `r4topunk/arcdrip`, contract `DripPool`, page r4topunk.github.io/arcdrip | "ArcSplit" and "ArcFlow" are taken |
+| D11 | Name SharedArc, folder `arc-drip/`, repo `r4topunk/sharedarc`, contract `DripPool`, page r4topunk.github.io/sharedarc | "ArcSplit" and "ArcFlow" are taken. Called ArcDrip until 2026-09-18; renamed because an unrelated payroll product on Arc uses that name (hence salt `arcdrip.v1`) |
 | D12 | Built in parallel with ArcSeal | User's call |
 | D13 | Funding only via `approve` + `deposit`; permissionless on a live pool | Differentiator is the accounting |
 | D14 | CEI + `ReentrancyGuard`; no `receive()`; Foundry, Solidity 0.8.x, TS/pnpm, viem/wagmi, Next.js static export, Zod, pino in the SDK | Precedent |
@@ -174,7 +174,7 @@ Errors: `PoolNotFound`, `NotOwner`, `NotPendingOwner`, `PoolCancelled`, `ZeroAdd
 
 ---
 
-## 5. SDK specification (`@arcdrip/sdk`)
+## 5. SDK specification (`@sharedarc/sdk`)
 - `constants.ts`: chain ids (5042, 5042002), RPCs, USDC address, `DRIP_POOL_ADDRESS` per chain (filled from `deployments/`), scales.
 - `schemas.ts` (Zod): `PoolState`, `MemberState`, `PoolEvent` union; bigint-safe parsing.
 - `math.ts`: pure, bigint, **bit-identical to §4.2**: `accrue(pool, now)`, `settle(pool, member)`, `claimable(pool, member, now) → units`, `fundedUntil(pool, now)`, `runwaySeconds(pool, now)`, `unstreamed(pool, now)`.
@@ -265,14 +265,14 @@ Status derivation, runway formatting, ticking value equals `math.ts`, owner/memb
 9. Proof pool 2: create, deposit 1 USDC, one member, cancel after 10 min; member withdraws after cancel.
 10. Leave pool 1 streaming ≥ 3 days; then check with the SDK: `Σ withdrawn + Σ claimable + dust == streamed`.
 11. Update README proof table, `deployments/arc-mainnet.json` `proofTxs`, `docs/GAS.md` mainnet column, site status line.
-12. Push to `github.com/r4topunk/arcdrip` public, Pages enabled.
+12. Push to `github.com/r4topunk/sharedarc` public, Pages enabled.
 13. Submit the BUIDL on DoraHacks with `SUBMISSION.md`. The form keeps no drafts and dropdowns linger.
 
 ---
 
 ## 11. Repository layout
 ```
-arcdrip/
+sharedarc/
   AGENTS.md  README.md  LICENSE (MIT)  CHECKLIST.md  DEPLOY.md  SUBMISSION.md  .env.example
   package.json  pnpm-workspace.yaml  .github/workflows/{ci.yml,pages.yml}
   contracts/   foundry.toml remappings.txt src/{DripPool.sol,interfaces/IDripPool.sol} test/{unit,fuzz,invariant,fork,mocks,vectors} script/{Deploy.s.sol,record-deployment.mjs}

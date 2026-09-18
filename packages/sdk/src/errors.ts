@@ -10,7 +10,7 @@ import {
 } from 'viem';
 import { dripPoolAbi } from './abi/DripPool.js';
 
-export type ArcDripErrorCode =
+export type SharedArcErrorCode =
   | 'INVALID_INPUT'
   | 'WALLET_REQUIRED'
   | 'POOL_NOT_FOUND'
@@ -19,17 +19,17 @@ export type ArcDripErrorCode =
   | 'EVENT_NOT_FOUND';
 
 /** Base class of every error the SDK raises deliberately. */
-export class ArcDripError extends Error {
-  readonly code: ArcDripErrorCode;
-  constructor(code: ArcDripErrorCode, message: string, options?: { cause?: unknown }) {
+export class SharedArcError extends Error {
+  readonly code: SharedArcErrorCode;
+  constructor(code: SharedArcErrorCode, message: string, options?: { cause?: unknown }) {
     super(message, options);
-    this.name = 'ArcDripError';
+    this.name = 'SharedArcError';
     this.code = code;
   }
 }
 
 /** An argument failed its Zod schema. Nothing was computed, sent or signed. One line per problem. */
-export class InvalidInputError extends ArcDripError {
+export class InvalidInputError extends SharedArcError {
   readonly issues: readonly string[];
   constructor(what: string, issues: readonly string[], options?: { cause?: unknown }) {
     super(
@@ -252,7 +252,7 @@ export function decodeRevert(error: unknown): DecodedRevert {
 }
 
 /** A read, a simulation or a transaction reverted. `reason` is the decoded custom error. */
-export class ContractRevertError extends ArcDripError {
+export class ContractRevertError extends SharedArcError {
   readonly functionName: string;
   readonly reason: DecodedRevert;
   constructor(functionName: string, reason: DecodedRevert, options?: { cause?: unknown }) {
@@ -267,7 +267,7 @@ export class ContractRevertError extends ArcDripError {
 }
 
 /** The simulation passed but the mined transaction reverted (a race, or a state change in between). */
-export class TransactionRevertedError extends ArcDripError {
+export class TransactionRevertedError extends SharedArcError {
   readonly hash: Hash;
   readonly functionName: string;
   /** Decoded by replaying the call at the block it landed in, when the node lets us. */
@@ -285,7 +285,7 @@ export class TransactionRevertedError extends ArcDripError {
 }
 
 /** An expected event was not in the receipt (wrong address, wrong ABI, or a reorg). */
-export class EventNotFoundError extends ArcDripError {
+export class EventNotFoundError extends SharedArcError {
   readonly hash: Hash;
   constructor(eventName: string, hash: Hash) {
     super('EVENT_NOT_FOUND', `event ${eventName} not found in the receipt of ${hash}`);
@@ -295,7 +295,7 @@ export class EventNotFoundError extends ArcDripError {
 }
 
 /** A write was requested without a wallet client holding an account. Nothing was sent. */
-export class WalletRequiredError extends ArcDripError {
+export class WalletRequiredError extends SharedArcError {
   constructor(action: string) {
     super('WALLET_REQUIRED', `${action} needs a walletClient with an account`);
     this.name = 'WalletRequiredError';
@@ -303,7 +303,7 @@ export class WalletRequiredError extends ArcDripError {
 }
 
 /** No `DripPool` address is known for this chain and none was passed. */
-export class PoolAddressUnknownError extends ArcDripError {
+export class PoolAddressUnknownError extends SharedArcError {
   readonly chainId: number | undefined;
   constructor(chainId: number | undefined) {
     super(

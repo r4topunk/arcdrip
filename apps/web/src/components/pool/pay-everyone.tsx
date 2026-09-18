@@ -1,6 +1,6 @@
 'use client';
 
-import { type MemberRow, payEveryone } from '@arcdrip/sdk';
+import { type MemberRow, payEveryone } from '@sharedarc/sdk';
 import { useState } from 'react';
 import { ErrorNote, RequireWallet } from '@/components/app-states';
 import { useI18n } from '@/components/i18n';

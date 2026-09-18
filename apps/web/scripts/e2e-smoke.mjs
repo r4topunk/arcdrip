@@ -7,8 +7,8 @@
 //   static  otherwise: build the unconfigured export and check the three pages, the nav and the PT-BR toggle.
 //
 // It exits 0 with SKIP when Chromium cannot be installed, so `pnpm test` stays usable on a fresh machine.
-//   pnpm --filter @arcdrip/web e2e:smoke
-//   env SHOTS_DIR=/tmp/arcdrip-shots pnpm --filter @arcdrip/web e2e:smoke
+//   pnpm --filter @sharedarc/web e2e:smoke
+//   env SHOTS_DIR=/tmp/sharedarc-shots pnpm --filter @sharedarc/web e2e:smoke
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:net';
@@ -254,7 +254,7 @@ async function step(name, fn) {
 try {
   const page = await openAs(null);
 
-  await step('the home page states what ArcDrip is and links to the docs', async () => {
+  await step('the home page states what SharedArc is and links to the docs', async () => {
     await page.goto(`${SITE}/`);
     await see(page, 'One rate, N shares, live runway');
     await see(page, 'Create a pool');
@@ -263,7 +263,7 @@ try {
 
   await step('the docs page renders the accrual and the comparison table', async () => {
     await page.goto(`${SITE}/docs/`);
-    await see(page, 'How ArcDrip works');
+    await see(page, 'How SharedArc works');
     await see(page, 'accIndex');
     await see(page, 'Sablier');
     await shot(page, 'docs');
@@ -271,9 +271,9 @@ try {
 
   await step('the docs page switches to Portuguese and back', async () => {
     await page.getByRole('button', { name: 'PT-BR' }).click();
-    await see(page, 'Como o ArcDrip funciona');
+    await see(page, 'Como o SharedArc funciona');
     await page.getByRole('button', { name: 'EN' }).click();
-    await see(page, 'How ArcDrip works');
+    await see(page, 'How SharedArc works');
   });
 
   await step('a pool page without an id explains what is missing', async () => {

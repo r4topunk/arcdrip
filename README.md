@@ -1,8 +1,8 @@
-# ArcDrip
+# SharedArc
 
 **A shared USDC stream for collectives on [Arc](https://arc.io): one rate, N shares, live runway.**
 
-ArcDrip is an MIT-licensed building block, not a SaaS. A pre-funded pool pays USDC per second, split among
+SharedArc is an MIT-licensed building block, not a SaaS. A pre-funded pool pays USDC per second, split among
 members by mutable integer shares. Joining, leaving or re-weighting mid-stream is one O(1) write that touches
 nobody else's storage. When the pool runs dry the stream freezes by itself and resumes on the next deposit, so
 it can never owe more than it holds — and the owner can never touch what members have already earned.
@@ -16,11 +16,15 @@ math so a UI ticks per second without RPC calls, and a static reference app, "Co
 > runs dry (about 8 h after its first deposit) and row 10 after three days of streaming. **Unaudited and
 > experimental**: keep amounts small.
 
+> **Name:** the project was called ArcDrip until 2026-09-18 and was renamed to avoid a clash with an unrelated
+> product of the same name on Arc. That is why the CREATE2 salt is `keccak256("arcdrip.v1")`; the contract,
+> its address and every recorded transaction are unchanged.
+
 | | |
 |---|---|
 | Contract | `DripPool` [`0x92b8fdB2c457b64d4510aC980A84283356D8A44f`](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) — [Sourcify exact match](https://repo.sourcify.dev/5042/0x92b8fdB2c457b64d4510aC980A84283356D8A44f), [deployments/arc-mainnet.json](deployments/arc-mainnet.json) |
-| Project page | https://r4topunk.github.io/arcdrip/ |
-| App | https://r4topunk.github.io/arcdrip/app/ — `apps/web` static export against the mainnet `DripPool` (pool 1: [/app/pool/?id=1](https://r4topunk.github.io/arcdrip/app/pool/?id=1)) |
+| Project page | https://r4topunk.github.io/sharedarc/ |
+| App | https://r4topunk.github.io/sharedarc/app/ — `apps/web` static export against the mainnet `DripPool` (pool 1: [/app/pool/?id=1](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
 | Chain | Arc mainnet, chainId 5042, USDC `0x3600000000000000000000000000000000000000` (ERC-20 view, 6 decimals) |
 
 ## What it does
@@ -92,7 +96,7 @@ are bit-identical to them, which is what lets the app tick locally instead of po
 
 ## Why Arc
 
-| Arc property | What ArcDrip does with it |
+| Arc property | What SharedArc does with it |
 |---|---|
 | USDC is the gas token **and** an ERC-20 (`0x3600…`, 6 decimals) | Treasury, payroll and gas are one asset. A member holding only their payroll can withdraw it. |
 | Dollar-priced gas (20 gwei floor) | A withdrawal costs ≈ 0.002 USDC, and one `withdrawForBatch` of ten members costs ≈ 0.0009 USDC per member — so paying everyone is cheaper than everyone paying themselves. |
@@ -100,12 +104,12 @@ are bit-identical to them, which is what lets the app tick locally instead of po
 | USDC blocklist reverts transfers | Payouts are per-member pulls and the batch skips a failing member instead of reverting. |
 | 6-decimal token, per-second accrual | Internal wad scaling (×1e12) keeps 1 USDC/month from rounding to zero per second, while transfers stay in whole USDC units. |
 | `eth_getLogs` capped at 10,000 blocks | Member discovery from `SharesSet` logs is chunked to that window and finished with one multicall. |
-| No Sablier, Superfluid, LlamaPay or 0xSplits on Arc | Greenfield: ArcDrip is the primitive, not a front end over one. |
+| No Sablier, Superfluid, LlamaPay or 0xSplits on Arc | Greenfield: SharedArc is the primitive, not a front end over one. |
 | CCTP V2 is live on Arc as a burn chain | Optional SDK helper: withdraw on Arc, then bridge the payout to another chain ([docs/CCTP.md](docs/CCTP.md)). Nothing bridge-related is in the contract. |
 
 ## Compared with
 
-| | **ArcDrip** | Sablier / LlamaPay | 0xSplits | Arc Studio "Revenue Router" |
+| | **SharedArc** | Sablier / LlamaPay | 0xSplits | Arc Studio "Revenue Router" |
 |---|---|---|---|---|
 | Unit | one pool: one rate, N shares | one stream per recipient | one split, applied on arrival | one router, fixed recipients |
 | Time | continuous, per second | continuous, per second | none — instant on receipt | none — instant on receipt |
@@ -116,7 +120,7 @@ are bit-identical to them, which is what lets the app tick locally instead of po
 | Payout to a member with no gas | `withdrawFor` / `withdrawForBatch`, permissionless, pays the member | withdraw-for exists in some versions | push on distribute | push on distribute |
 | On Arc | yes (this repo; deploy pending) | not deployed | not deployed ([0xSplits issue #77](https://github.com/0xSplits/splits-contracts/issues/77) open since 2026-04-08) | yes, as an official tutorial sample on testnet |
 
-ArcDrip is the product of stream × split: a splitter has shares but no time, a stream has time but no shares.
+SharedArc is the product of stream × split: a splitter has shares but no time, a stream has time but no shares.
 The "who gets what" and the "how fast" live in the same pool, which is why re-weighting is one write instead of
 N cancellations.
 
@@ -125,24 +129,24 @@ N cancellations.
 Requirements: Node ≥ 22, pnpm 11, Foundry.
 
 ```bash
-git clone https://github.com/r4topunk/arcdrip && cd arcdrip
+git clone https://github.com/r4topunk/sharedarc && cd sharedarc
 git submodule update --init --recursive
 pnpm install
 pnpm build          # forge build + sdk + web static export (apps/web/out)
 pnpm test           # forge test (unit, fuzz, invariant) + every vitest suite
 pnpm check          # build + test + typecheck + lint + forge fmt --check + ABI drift + gas snapshot
-pnpm --filter @arcdrip/web dev      # http://localhost:3000
+pnpm --filter @sharedarc/web dev      # http://localhost:3000
 ```
 
 ### Use the SDK
 
-`@arcdrip/sdk` is not published to npm yet; it is a workspace package.
+`@sharedarc/sdk` is not published to npm yet; it is a workspace package.
 
 ```ts
 import {
   approveAndDeposit, claimable, createPool, getMember, getPool, payEveryone, poolStatus,
   runwaySeconds, setShares, toAccrualPool, toRatePerSecond, withdraw,
-} from '@arcdrip/sdk';
+} from '@sharedarc/sdk';
 import { createPublicClient, createWalletClient, custom, http } from 'viem';
 import { arc } from 'viem/chains';
 
@@ -220,9 +224,9 @@ found during the build: [docs/THREATS.md](docs/THREATS.md). The contract is **un
 | Path | Package | What |
 |---|---|---|
 | [`contracts/`](contracts) | Foundry | `DripPool.sol`, `IDripPool.sol`, unit + fuzz + invariant + gas + fork tests, blocklist mock, vector export, CREATE2 deploy script |
-| [`packages/sdk`](packages/sdk) | `@arcdrip/sdk` | viem actions (simulate first, typed errors), Zod schemas, the accrual mirror, rate helpers, member discovery, optional CCTP leg |
-| [`apps/web`](apps/web) | `@arcdrip/web` | "Collective Payroll": static Next.js export, EN and PT-BR, wallet-only (no server, no indexer) |
-| [`scripts/`](scripts) | `@arcdrip/scripts` | Idempotent testnet end-to-end run over the full lifecycle |
+| [`packages/sdk`](packages/sdk) | `@sharedarc/sdk` | viem actions (simulate first, typed errors), Zod schemas, the accrual mirror, rate helpers, member discovery, optional CCTP leg |
+| [`apps/web`](apps/web) | `@sharedarc/web` | "Collective Payroll": static Next.js export, EN and PT-BR, wallet-only (no server, no indexer) |
+| [`scripts/`](scripts) | `@sharedarc/scripts` | Idempotent testnet end-to-end run over the full lifecycle |
 | [`site/`](site) | | Project page published to GitHub Pages |
 | [`deployments/`](deployments) | | Addresses, deploy block and proof transaction hashes per network |
 
@@ -248,12 +252,12 @@ an operator ordering slip); the cancel and the post-cancel `withdraw` in row 9 a
 | 2 | Create proof pool 1 "r4to collective": 3 USDC/day, shares 1 / 1 / 2; deposit 1 USDC (8 h of runway) | [createPool `0xc46ded99…`](https://explorer.arc.io/tx/0xc46ded991975902399f5592699d769428262a8b85641762f04e6180a56741e17) · [setSharesBatch `0x445a5431…`](https://explorer.arc.io/tx/0x445a5431f608871356fa3e084941523006d9fd8928a812f08c0c8dc2b3a2dafa) · [approve `0x412ecbea…`](https://explorer.arc.io/tx/0x412ecbea1cab2449cf92521ad0741c58f4f235bb68e3d7faaafa6b3956916296) · [deposit `0xdcd8771e…`](https://explorer.arc.io/tx/0xdcd8771e113fc6606a361cbe66211c3da1ef7c11c0de4aaada12368d6cdd8f77) |
 | 3 | `withdraw` by a member, and `withdrawFor` for another member paid by a third wallet | [withdraw (C) `0x5fce2ef1…`](https://explorer.arc.io/tx/0x5fce2ef1183527c979be15c65fc534cacd5c843c4f678ee6ede4c7e93ed1082d) · [withdrawFor(B) sent by OPS `0x2930f93a…`](https://explorer.arc.io/tx/0x2930f93a24bd2cf1ee4fa95dbc5cc870c6987abcf9f54a939bdfde5a270853af) |
 | 4 | `setShares` mid-stream (a fourth member joins) and `setPayoutAddress` to a fresh address | [setShares(OPS, 1) `0x3b6d2b97…`](https://explorer.arc.io/tx/0x3b6d2b9740f1fa1fa1054d88099ae849502cf6c4eadb1e88be323bef1a4eb3f6) · [setPayoutAddress (B) `0x6e469441…`](https://explorer.arc.io/tx/0x6e469441377aa6e126caaee64a9683041cdc7248e60b1ac67b28abe3d3e60072) |
-| 5 | Pool runs dry and freezes (`claimable` stops growing); deposit 1 USDC resumes it with no back-pay | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/arcdrip/app/pool/?id=1)) |
-| 6 | `withdrawForBatch` over all four members in one transaction, sent by one member (C) for everyone | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/arcdrip/app/pool/?id=1)) |
-| 7 | `setShares(member, 0)` (leave), then `withdrawFor` still pays that member the accrued amount | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/arcdrip/app/pool/?id=1)) |
-| 8 | `setRate(0)` (pause), `setRate` back, then `withdrawUnstreamed` of 0.5 USDC | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/arcdrip/app/pool/?id=1)) |
+| 5 | Pool runs dry and freezes (`claimable` stops growing); deposit 1 USDC resumes it with no back-pay | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
+| 6 | `withdrawForBatch` over all four members in one transaction, sent by one member (C) for everyone | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
+| 7 | `setShares(member, 0)` (leave), then `withdrawFor` still pays that member the accrued amount | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
+| 8 | `setRate(0)` (pause), `setRate` back, then `withdrawUnstreamed` of 0.5 USDC | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
 | 9 | Proof pool 2: create, deposit 0.2 USDC, `cancel`, and the member withdraws **after** the cancel | [createPool `0xc0bc79e3…`](https://explorer.arc.io/tx/0xc0bc79e37451b8407a85a0588eb7a9cb4cb336f72a2e2bbaa9d10b1053d5224d) · [setShares(C, 1) `0x855f0d39…`](https://explorer.arc.io/tx/0x855f0d39ee98527ad61afa169df01900562fc5005bb9b89e9b528ebd24ba7b93) · [approve `0xbc59ad32…`](https://explorer.arc.io/tx/0xbc59ad3299a0f7d7744dd13cd96b7cf7f730485c73e47c64be0c06c1d4d84599) · [deposit `0x53f20456…`](https://explorer.arc.io/tx/0x53f2045644a09be8b8dadcabbbf0a4f0527cc96730aee743a44475928ad1d365) · [cancel `0x3fa2cf07…`](https://explorer.arc.io/tx/0x3fa2cf078949abee422a5c95ab405875b21b6eaacdae3b9f050490430f6d6cd6) · [withdraw after cancel (C) `0x1b0c57b5…`](https://explorer.arc.io/tx/0x1b0c57b5857f80972bf9790c186c1ce82cfae999b0e1721ba147fa125c454457) |
-| 10 | After ≥ 3 days streaming: `Σ withdrawn + Σ claimable + dust == streamed`, reconciled with the SDK | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/arcdrip/app/pool/?id=1)) |
+| 10 | After ≥ 3 days streaming: `Σ withdrawn + Σ claimable + dust == streamed`, reconciled with the SDK | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
 
 ## Docs
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { type AccrualPool, type MemberRow, memberRate, unitsPerPeriod } from '@arcdrip/sdk';
+import { type AccrualPool, type MemberRow, memberRate, unitsPerPeriod } from '@sharedarc/sdk';
 import type { Address } from 'viem';
 import { AddressLink } from '@/components/app-states';
 import { useI18n } from '@/components/i18n';

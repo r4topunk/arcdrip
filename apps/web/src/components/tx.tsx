@@ -1,6 +1,11 @@
 'use client';
 
-import { type DripPoolConfig, WalletRequiredError, type WriteResult, type WriteSuccess } from '@arcdrip/sdk';
+import {
+  type DripPoolConfig,
+  WalletRequiredError,
+  type WriteResult,
+  type WriteSuccess,
+} from '@sharedarc/sdk';
 import { useQueryClient } from '@tanstack/react-query';
 import { ExternalLink } from 'lucide-react';
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';

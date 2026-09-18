@@ -1,4 +1,4 @@
-# ArcDrip technical spec
+# SharedArc technical spec
 
 > Implementation spec for the product defined in [`PRD.md`](../PRD.md). The decisions in PRD §3 (D1–D15) are
 > final; this document explains how they are built, it does not reopen them.
@@ -54,7 +54,7 @@ Repo layout (PRD §11):
 ```
 contracts/    Foundry: src/{DripPool.sol,interfaces/IDripPool.sol},
               test/{unit,fuzz,invariant,fork,mocks,vectors}
-packages/sdk/ @arcdrip/sdk: math mirror, rate helpers, viem actions, Zod schemas
+packages/sdk/ @sharedarc/sdk: math mirror, rate helpers, viem actions, Zod schemas
 apps/web/     Next.js static export, EN/PT-BR ("Collective Payroll")
 docs/         SPEC.md (this file), THREATS.md, GAS.md
 ```
@@ -403,7 +403,7 @@ I1–I5 are the acceptance gate in PRD §10.1. They live in `contracts/test/inva
 (with the exact-rational reference model in `RationalAcc.sol`). The unit tests listed alongside them cover the
 same statements case by case.
 
-## 9. SDK mirror (`@arcdrip/sdk`)
+## 9. SDK mirror (`@sharedarc/sdk`)
 
 `packages/sdk/src/math.ts` is an independent bigint implementation of §4, written from this spec rather than
 from the contract (PRD §12, phase 1). Contract and mirror are cross-checked by

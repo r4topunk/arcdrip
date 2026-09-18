@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/primitives';
 export const metadata: Metadata = {
   title: 'Pool',
   description:
-    'One ArcDrip pool: rate, balance, runway, the member table ticking every second, deposit, "Pay everyone", and the owner and member panels.',
+    'One SharedArc pool: rate, balance, runway, the member table ticking every second, deposit, "Pay everyone", and the owner and member panels.',
 };
 
 // A static export cannot pre-render unknown pool ids, so this one page reads ?id=N on the client (PRD 6).

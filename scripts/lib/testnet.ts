@@ -4,7 +4,7 @@
 // the run, and a re-run resumes from scripts/.state/5042002.json.
 import { existsSync, renameSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { createLogger, getUsdcAddress, newCorrelationId } from '@arcdrip/sdk';
+import { createLogger, getUsdcAddress, newCorrelationId } from '@sharedarc/sdk';
 import {
   type Address,
   createPublicClient,
@@ -105,7 +105,9 @@ export async function runTestnet(options: TestnetOptions = {}): Promise<TestnetR
     bindings: { runTag: store.get().runTag },
   });
 
-  say(`ArcDrip e2e on Arc testnet (chain ${ARC_TESTNET_ID}), DripPool ${pool} (deploy block ${deployBlock})`);
+  say(
+    `SharedArc e2e on Arc testnet (chain ${ARC_TESTNET_ID}), DripPool ${pool} (deploy block ${deployBlock})`,
+  );
   say(`run ${store.get().runTag}, state ${stateFile}, proofs ${deploymentsFile}`);
   say(
     'Testnet USDC comes from https://faucet.circle.com; gas is paid in USDC, so every wallet needs a little.',
@@ -165,5 +167,5 @@ export async function runTestnet(options: TestnetOptions = {}): Promise<TestnetR
 
 /** Deterministic, key-less address for the fourth member: the last 20 bytes of keccak256(runTag). */
 export function burnerFromRunTag(runTag: string): Address {
-  return getAddress(`0x${keccak256(toHex(`arcdrip/member4/${runTag}`)).slice(-40)}`);
+  return getAddress(`0x${keccak256(toHex(`sharedarc/member4/${runTag}`)).slice(-40)}`);
 }

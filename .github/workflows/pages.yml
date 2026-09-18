@@ -53,18 +53,18 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - name: Build the dApp (static export under /arcdrip/app)
+      - name: Build the dApp (static export under /sharedarc/app)
         if: steps.dep.outputs.deployed == 'true'
         env:
-          NEXT_PUBLIC_BASE_PATH: /arcdrip/app
+          NEXT_PUBLIC_BASE_PATH: /sharedarc/app
           NEXT_PUBLIC_CHAIN_ID: '5042'
           NEXT_PUBLIC_DRIP_ADDRESS: ${{ steps.dep.outputs.address }}
           NEXT_PUBLIC_DRIP_DEPLOY_BLOCK: ${{ steps.dep.outputs.block }}
-          NEXT_PUBLIC_SITE_URL: https://r4topunk.github.io/arcdrip
+          NEXT_PUBLIC_SITE_URL: https://r4topunk.github.io/sharedarc
         run: |
           pnpm install --frozen-lockfile
           # the ABI is committed, so the SDK builds without Foundry
-          pnpm --filter '@arcdrip/web...' build
+          pnpm --filter '@sharedarc/web...' build
 
       - name: Assemble the site
         run: |

@@ -14,7 +14,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@arcdrip/sdk':
+      '@sharedarc/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
       '@tanstack/react-query':
@@ -136,7 +136,7 @@ importers:
 
   scripts:
     dependencies:
-      '@arcdrip/sdk':
+      '@sharedarc/sdk':
         specifier: workspace:*
         version: link:../packages/sdk
       viem:

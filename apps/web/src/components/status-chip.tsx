@@ -1,6 +1,6 @@
 'use client';
 
-import type { PoolStatus } from '@arcdrip/sdk';
+import type { PoolStatus } from '@sharedarc/sdk';
 import { STATUS_TONE } from '@/lib/pool';
 import { useI18n } from './i18n';
 import { Badge } from './ui/primitives';

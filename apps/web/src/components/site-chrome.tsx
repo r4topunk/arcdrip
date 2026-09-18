@@ -23,7 +23,7 @@ export function Logo({ className }: { className?: string }) {
         <circle cx="16" cy="27" r="1.6" fill="white" opacity="0.55" />
         <circle cx="21.5" cy="25" r="1.6" fill="white" opacity="0.8" />
       </svg>
-      <span className="font-semibold text-base tracking-tight">ArcDrip</span>
+      <span className="font-semibold text-base tracking-tight">SharedArc</span>
     </span>
   );
 }

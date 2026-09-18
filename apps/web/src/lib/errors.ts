@@ -4,13 +4,13 @@
 // The SDK already decodes reverts for us. A refused write comes back as `{ ok: false, error: DecodedRevert }`
 // rather than as an exception, so both paths land here: `revertMessage` for the value, `errorMessage` for a throw.
 import {
-  ArcDripError,
   ContractRevertError,
   type DecodedRevert,
   type DripErrorName,
   decodeRevert,
   InvalidInputError,
-} from '@arcdrip/sdk';
+  SharedArcError,
+} from '@sharedarc/sdk';
 import {
   BaseError,
   ChainMismatchError,
@@ -83,7 +83,7 @@ export function describeError(err: unknown): ErrorDescription {
   if (err instanceof InvalidInputError)
     return { key: 'error.invalidInput', vars: { details: err.issues.join('; ') } };
   if (err instanceof ContractRevertError) return describeRevert(err.reason);
-  if (err instanceof ArcDripError) {
+  if (err instanceof SharedArcError) {
     switch (err.code) {
       case 'WALLET_REQUIRED':
         return { key: 'error.wallet.notConnected' };

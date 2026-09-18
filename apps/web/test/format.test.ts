@@ -1,4 +1,4 @@
-import { UNBOUNDED_RUNWAY } from '@arcdrip/sdk';
+import { UNBOUNDED_RUNWAY } from '@sharedarc/sdk';
 import { describe, expect, it } from 'vitest';
 import {
   formatDuration,

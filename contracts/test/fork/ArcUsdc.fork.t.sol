@@ -81,7 +81,7 @@ contract ArcUsdcForkTest is Test {
 
     /// @dev Arc keeps one balance: the native coin and the 6-decimal ERC-20 view are the same money.
     function test_fork_NativeBalanceIsTheUsdcBalance() public onlyFork {
-        address holder = makeAddr("arcdrip-fork-holder");
+        address holder = makeAddr("sharedarc-fork-holder");
         assertEq(usdc.balanceOf(holder), 0);
         vm.deal(holder, 2.5 ether);
         assertEq(usdc.balanceOf(holder), 2_500_000, "1 native unit is not 1e-6 USDC");
@@ -97,7 +97,7 @@ contract ArcUsdcForkTest is Test {
         DripPool drip = new DripPool(USDC);
         assertEq(address(drip.usdc()), USDC);
 
-        address owner = makeAddr("arcdrip-fork-owner");
+        address owner = makeAddr("sharedarc-fork-owner");
         uint256 poolId = drip.createPool(owner, RATE, 0, "fork pool");
         IDripPool.Pool memory p = drip.getPool(poolId);
         assertEq(p.owner, owner);
@@ -114,9 +114,9 @@ contract ArcUsdcForkTest is Test {
         }
 
         DripPool drip = new DripPool(USDC);
-        address owner = makeAddr("arcdrip-fork-owner2");
-        address funder = makeAddr("arcdrip-fork-funder");
-        address member = makeAddr("arcdrip-fork-member");
+        address owner = makeAddr("sharedarc-fork-owner2");
+        address funder = makeAddr("sharedarc-fork-funder");
+        address member = makeAddr("sharedarc-fork-member");
         vm.deal(funder, 10 ether);
 
         uint256 poolId = drip.createPool(owner, RATE, 0, "fork payroll");
@@ -152,11 +152,11 @@ contract ArcUsdcForkTest is Test {
 
     /// @dev One-off probe: can a USDC transfer execute on this fork at all?
     function _probeTransfer() internal returns (bool ok) {
-        address probe = makeAddr("arcdrip-fork-probe");
+        address probe = makeAddr("sharedarc-fork-probe");
         vm.deal(probe, 1 ether);
         vm.prank(probe);
         (bool success, bytes memory ret) =
-            USDC.call(abi.encodeCall(IArcUsdc.transfer, (makeAddr("arcdrip-fork-probe-sink"), 1)));
+            USDC.call(abi.encodeCall(IArcUsdc.transfer, (makeAddr("sharedarc-fork-probe-sink"), 1)));
         ok = success && (ret.length == 0 || abi.decode(ret, (bool)));
         if (!ok) console.log("USDC transfers do not execute on this fork; the transfer paths are skipped");
     }

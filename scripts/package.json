@@ -1,5 +1,5 @@
 {
-  "name": "@arcdrip/scripts",
+  "name": "@sharedarc/scripts",
   "version": "0.0.0",
   "private": true,
   "description": "Operator scripts: the Arc testnet end-to-end run (PRD 8.4). Not hosted, run by hand.",
@@ -17,7 +17,7 @@
     "format": "biome check --write ."
   },
   "dependencies": {
-    "@arcdrip/sdk": "workspace:*",
+    "@sharedarc/sdk": "workspace:*",
     "viem": "^2.56.7",
     "zod": "^4.1.0"
   },

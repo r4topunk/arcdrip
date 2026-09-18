@@ -11,7 +11,7 @@ import {
   transferPoolOwnership,
   unitsPerPeriod,
   withdrawUnstreamed,
-} from '@arcdrip/sdk';
+} from '@sharedarc/sdk';
 import { useId, useState } from 'react';
 import { type Address, isAddress } from 'viem';
 import { useAccount } from 'wagmi';

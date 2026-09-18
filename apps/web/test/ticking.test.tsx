@@ -1,4 +1,4 @@
-import { type AccrualPool, claimable, type PoolMember, toMemberRows, toRatePerSecond } from '@arcdrip/sdk';
+import { type AccrualPool, claimable, type PoolMember, toMemberRows, toRatePerSecond } from '@sharedarc/sdk';
 import { act, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemberTable } from '@/components/pool/member-table';

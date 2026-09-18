@@ -1,7 +1,7 @@
 {
-  "name": "arcdrip",
+  "name": "sharedarc",
   "private": true,
-  "description": "ArcDrip: a shared USDC stream for collectives on Arc (one rate, N shares, live runway)",
+  "description": "SharedArc: a shared USDC stream for collectives on Arc (one rate, N shares, live runway)",
   "license": "MIT",
   "packageManager": "pnpm@11.0.0",
   "engines": {
@@ -12,17 +12,17 @@
     "test": "pnpm contracts:test:ci && pnpm -r --if-present test",
     "check": "pnpm build && pnpm test && pnpm typecheck && pnpm lint && pnpm contracts:fmt && pnpm sdk:check-abi && pnpm contracts:snapshot:check",
     "lint": "pnpm -r --if-present lint",
-    "typecheck": "pnpm --filter '@arcdrip/sdk...' build && pnpm -r --if-present typecheck",
+    "typecheck": "pnpm --filter '@sharedarc/sdk...' build && pnpm -r --if-present typecheck",
     "contracts:build": "cd contracts && forge build",
     "contracts:test": "cd contracts && forge test -vvv",
     "contracts:test:ci": "cd contracts && forge test",
     "contracts:fmt": "cd contracts && forge fmt --check",
     "contracts:snapshot": "cd contracts && forge snapshot --no-match-path 'test/{invariant,fork}/*'",
     "contracts:snapshot:check": "cd contracts && forge snapshot --check --tolerance 5 --no-match-path 'test/{invariant,fork}/*'",
-    "contracts:abi": "cd contracts && forge build && cd .. && pnpm --filter @arcdrip/sdk generate:abi",
-    "sdk:check-abi": "pnpm --filter @arcdrip/sdk check:abi",
-    "e2e:testnet": "pnpm --filter '@arcdrip/sdk...' build && pnpm --filter @arcdrip/scripts e2e:testnet",
-    "e2e:dry-run": "pnpm contracts:build && pnpm --filter '@arcdrip/sdk...' build && pnpm --filter @arcdrip/scripts e2e:dry-run"
+    "contracts:abi": "cd contracts && forge build && cd .. && pnpm --filter @sharedarc/sdk generate:abi",
+    "sdk:check-abi": "pnpm --filter @sharedarc/sdk check:abi",
+    "e2e:testnet": "pnpm --filter '@sharedarc/sdk...' build && pnpm --filter @sharedarc/scripts e2e:testnet",
+    "e2e:dry-run": "pnpm contracts:build && pnpm --filter '@sharedarc/sdk...' build && pnpm --filter @sharedarc/scripts e2e:dry-run"
   },
   "devDependencies": {
     "playwright": "^1.63.0"

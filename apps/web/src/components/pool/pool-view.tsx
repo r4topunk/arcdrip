@@ -13,7 +13,7 @@ import {
   unstreamed,
   withdraw,
   withdrawFor,
-} from '@arcdrip/sdk';
+} from '@sharedarc/sdk';
 import { useSearchParams } from 'next/navigation';
 import { type ReactNode, useMemo } from 'react';
 import type { Address } from 'viem';

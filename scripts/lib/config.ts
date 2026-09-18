@@ -77,7 +77,7 @@ export function chainFor(chainId: number, rpcUrl: string, explorer = ''): Chain 
  * HTTP transport that adds a 20 % margin to every gas figure, as a browser wallet does. An exact estimate can run
  * out of gas onchain when state moves between the estimate and inclusion: `withdrawForBatch` costs more when a
  * member's transfer succeeds than when it is skipped, and `setShares` costs more when it writes a fresh slot.
- * @arcdrip/sdk applies its own buffer to local accounts; this transport also covers anvil's unlocked accounts,
+ * @sharedarc/sdk applies its own buffer to local accounts; this transport also covers anvil's unlocked accounts,
  * which send through `eth_sendTransaction` and let the node fill the gas. Unused gas is not charged.
  */
 export function httpWithGasMargin(url: string): Transport {

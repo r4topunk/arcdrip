@@ -58,7 +58,7 @@ import { anvilAvailable, localChain, startAnvil } from './helpers/anvil.js';
 /** 100 USDC units per second (0.0001 USDC/s), in wad. Small enough to keep every number readable. */
 const RATE = 100n * WAD_PER_UNIT;
 
-describe.skipIf(!anvilAvailable)('@arcdrip/sdk against a local anvil', () => {
+describe.skipIf(!anvilAvailable)('@sharedarc/sdk against a local anvil', () => {
   let stop: () => Promise<void>;
   let url: string;
   let publicClient: PublicClient;

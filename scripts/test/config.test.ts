@@ -81,7 +81,7 @@ describe('txUrl / logLevel', () => {
 
 describe('readDeployment', () => {
   it('returns null while the record is still a template, and the address once it is filled', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'arcdrip-deploy-'));
+    const dir = mkdtempSync(join(tmpdir(), 'sharedarc-deploy-'));
     try {
       const file = join(dir, 'arc-testnet.json');
       const template = {

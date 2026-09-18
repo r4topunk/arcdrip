@@ -1,4 +1,4 @@
-# CCTP on Arc — finding and what ArcDrip does with it
+# CCTP on Arc — finding and what SharedArc does with it
 
 Research date: **2026-09-18**. Question from PRD §14: *does Bridge Kit / CCTP support Arc mainnet (chain 5042) as a
 **source** chain today?*
@@ -20,7 +20,7 @@ Not from docs alone — every line below was read from Arc mainnet over `https:/
 - The implementation behind the `TokenMessengerV2` proxy (slot `0x3608…8bbc` → `0x1ccafdffbc1b7b5c499c97322f961b7d929a41b4`)
   contains the selectors `0x8e0250ee` (`depositForBurn(uint256,uint32,bytes32,address,bytes32,uint256,uint32)`) and
   `0x779b432d` (`depositForBurnWithHook(...)`). Burning **from** Arc is therefore live, not just minting into Arc.
-- The burn token is the same native USDC ERC-20 view ArcDrip uses, `0x3600000000000000000000000000000000000000`, and it
+- The burn token is the same native USDC ERC-20 view SharedArc uses, `0x3600000000000000000000000000000000000000`, and it
   has a non-zero per-message burn limit — the check that would be zero if Arc were mint-only.
 - **Arc CCTP domain: 26**, on mainnet *and* testnet (both `MessageTransmitterV2.localDomain()` return 26). Arc testnet
   (chain 5042002) carries `TokenMessengerV2` at `0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA` and
@@ -45,7 +45,7 @@ bridge leg is two or three ordinary transactions from the member's own wallet.
 - **It does not fetch or submit the attestation.** After the burn, Circle's Iris service attests the message and
   someone calls `receiveMessage` on the destination chain. That is the destination chain's business; Circle's own
   Bridge Kit does it better than a payroll SDK would, and pulling `@circle-fin/bridge-kit` in would add a dependency
-  to every consumer of `@arcdrip/sdk` for a leg most of them never use.
+  to every consumer of `@sharedarc/sdk` for a leg most of them never use.
 - **It does not encode non-EVM recipients.** Solana, Sui, Aptos and Noble have CCTP domains, but their
   `mintRecipient` is not a padded EVM address. `CCTP_DOMAINS` lists EVM chains only; any `uint32` domain is still
   accepted by the functions, so a caller who knows what they are doing is not blocked.

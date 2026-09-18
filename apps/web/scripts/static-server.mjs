@@ -1,5 +1,5 @@
 // Minimal static file server for the Next export (out/): /path/ serves /path/index.html, and an optional basePath
-// prefix mimics GitHub Pages (/arcdrip/...). Used by e2e-anvil.mjs; not a production server.
+// prefix mimics GitHub Pages (/sharedarc/...). Used by e2e-anvil.mjs; not a production server.
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import path from 'node:path';

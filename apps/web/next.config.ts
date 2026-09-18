@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 
 const repoRoot = path.join(import.meta.dirname, '../..');
 
-// GitHub Pages serves the export under /arcdrip (the Pages workflow sets NEXT_PUBLIC_BASE_PATH); local builds use "".
+// GitHub Pages serves the export under /sharedarc (the Pages workflow sets NEXT_PUBLIC_BASE_PATH); local builds use "".
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? '').replace(/\/+$/, '');
 
 const nextConfig: NextConfig = {

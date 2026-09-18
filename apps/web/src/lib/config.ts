@@ -50,7 +50,7 @@ export interface AppConfig {
   deployBlock: bigint;
   siteUrl: string;
   repoUrl: string;
-  /** Next basePath ('' locally, '/arcdrip' on GitHub Pages). Needed for raw <a href> in rendered markdown. */
+  /** Next basePath ('' locally, '/sharedarc' on GitHub Pages). Needed for raw <a href> in rendered markdown. */
   basePath: string;
   /** Human-readable problems with the build configuration, shown in a banner. */
   problems: string[];
@@ -101,8 +101,8 @@ export function parseConfig(env: PublicEnv): AppConfig {
     drip,
     usdc,
     deployBlock,
-    siteUrl: httpUrl(env.NEXT_PUBLIC_SITE_URL) ?? 'https://r4topunk.github.io/arcdrip',
-    repoUrl: httpUrl(env.NEXT_PUBLIC_REPO_URL) ?? 'https://github.com/r4topunk/arcdrip',
+    siteUrl: httpUrl(env.NEXT_PUBLIC_SITE_URL) ?? 'https://r4topunk.github.io/sharedarc',
+    repoUrl: httpUrl(env.NEXT_PUBLIC_REPO_URL) ?? 'https://github.com/r4topunk/sharedarc',
     basePath: trimSlash(env.NEXT_PUBLIC_BASE_PATH?.trim() ?? ''),
     problems,
   };

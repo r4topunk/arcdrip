@@ -1,4 +1,4 @@
-import { type DecodedRevert, DRIP_ERROR_NAMES, decodeRevertData, InvalidInputError } from '@arcdrip/sdk';
+import { type DecodedRevert, DRIP_ERROR_NAMES, decodeRevertData, InvalidInputError } from '@sharedarc/sdk';
 import { UserRejectedRequestError } from 'viem';
 import { describe, expect, it } from 'vitest';
 import { CONTRACT_ERROR_KEYS, describeError, errorMessage, revertMessage } from '@/lib/errors';

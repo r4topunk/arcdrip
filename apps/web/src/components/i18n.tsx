@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
  * Shared with the project page (site/index.html), which stores 'en' or 'pt' under the same key, so the language
  * picked on either page carries over on the same origin.
  */
-export const LOCALE_STORAGE_KEY = 'arcdrip:lang';
+export const LOCALE_STORAGE_KEY = 'sharedarc:lang';
 
 export function readStoredLocale(): Locale {
   const v = safeGet(LOCALE_STORAGE_KEY);
@@ -58,12 +58,12 @@ export function useI18n() {
 }
 
 /**
- * Sets the browser tab title to "<title> · ArcDrip" in the active language. Route metadata is static and English (the
+ * Sets the browser tab title to "<title> · SharedArc" in the active language. Route metadata is static and English (the
  * export is built once), so each view calls this with its translated title; null leaves the title alone.
  */
 export function useDocumentTitle(title: string | null) {
   useEffect(() => {
-    if (title) document.title = `${title} · ArcDrip`;
+    if (title) document.title = `${title} · SharedArc`;
   }, [title]);
 }
 

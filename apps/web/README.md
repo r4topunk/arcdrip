@@ -1,6 +1,6 @@
-# @arcdrip/web — Collective Payroll
+# @sharedarc/web — Collective Payroll
 
-The ArcDrip reference app: create a pool, set members and shares, deposit, watch the balances fill, press
+The SharedArc reference app: create a pool, set members and shares, deposit, watch the balances fill, press
 "Pay everyone". Static Next.js export (`output: 'export'`), no server and no backend, wagmi + viem, EN/PT-BR.
 `pnpm build` writes `./out`.
 
@@ -8,13 +8,13 @@ The ArcDrip reference app: create a pool, set members and shares, deposit, watch
 
 | Route | What it does |
 |---|---|
-| `/` | What ArcDrip is in three lines, the "Create a pool" form (name, amount per period → rate, optional start), the pools created on this deployment, and an "open by id" box. |
+| `/` | What SharedArc is in three lines, the "Create a pool" form (name, amount per period → rate, optional start), the pools created on this deployment, and an "open by id" box. |
 | `/pool/?id=N` | Rate, balance, **runway**, status, and the member table ticking every second. Deposit (approve + deposit), "Pay everyone", the owner panel and the member panel. A static export cannot pre-render unknown ids, so the id is a query string, not a route. |
 | `/docs/` | How the accrual works, the guarantees, plugging a Safe or a DAO as owner, the comparison table and the FAQ — rendered at build time from `content/{en,pt-BR}/docs.md`. |
 
 ## How the ticking works
 
-Every claimable on the page comes from `@arcdrip/sdk`'s `math.ts`, which mirrors the contract's `_accrue` /
+Every claimable on the page comes from `@sharedarc/sdk`'s `math.ts`, which mirrors the contract's `_accrue` /
 `_settle` bit for bit. The page reads the chain **every 30 seconds and after every transaction**; in between it
 advances the same arithmetic locally once a second, with `requestAnimationFrame` throttled to 1 Hz (`useNow`).
 The number on screen is therefore what the chain would pay this second, not an animation.

@@ -1,6 +1,6 @@
 // Every number the app shows goes through here. Amounts are USDC units (1e-6 USDC) and durations are seconds,
 // both as bigint, because that is what the SDK's accrual mirror works in: nothing is ever rounded through a float.
-import { UNBOUNDED_RUNWAY } from '@arcdrip/sdk';
+import { UNBOUNDED_RUNWAY } from '@sharedarc/sdk';
 import type { Locale } from './i18n';
 
 /** Decimals of the USDC ERC-20 view on Arc. Gas is paid in the same asset, in an 18-decimal native view. */

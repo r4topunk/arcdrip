@@ -13,7 +13,7 @@ import {
   type PoolState,
   parsePoolState,
   splitBlockRange,
-} from '@arcdrip/sdk';
+} from '@sharedarc/sdk';
 import { useQuery } from '@tanstack/react-query';
 import { type Address, type PublicClient, parseEventLogs } from 'viem';
 import { getBlockNumber, getLogs, readContract } from 'viem/actions';
