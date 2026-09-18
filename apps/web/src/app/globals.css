@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+/*
+  ArcDrip app: the same clean white template as the project page (site/index.html) and ArcPull.
+  White page, ink text, one cobalt accent used as a mark, hairlines before shadows.
+*/
+:root {
+  --background: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f2f4f7;
+  --foreground: #121826;
+  --muted: #555f6d;
+  --faint: #8a93a0;
+  --hairline: #ebeef2;
+  --hairline-strong: #dde2e9;
+  --accent: #2f6bae;
+  --accent-soft: #e3ecf6;
+  --accent-ink: #ffffff;
+  --ok: #23734a;
+  --ok-soft: #e4f2ea;
+  --warn: #94560f;
+  --warn-soft: #f8eedf;
+  --danger: #ae3d36;
+  --danger-soft: #f8e6e4;
+  --info: #5b4bb0;
+  --info-soft: #ece9f8;
+  --ring: #2f6bae;
+  --shadow: 0 1px 2px rgb(20 40 70 / 0.05), 0 12px 32px -16px rgb(20 40 70 / 0.18);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --shadow-raised: var(--shadow);
+}
+
+@layer base {
+  * {
+    border-color: var(--hairline);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+  }
+}
+
+/* Docs prose (rendered markdown). */
+.prose {
+  line-height: 1.7;
+  font-size: 0.975rem;
+  overflow-wrap: anywhere;
+}
+.prose > * + * {
+  margin-top: 1rem;
+}
+.prose h2,
+.prose h3,
+.prose h4 {
+  position: relative;
+  scroll-margin-top: 5.5rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hairline);
+}
+.prose h3 {
+  font-size: 1.15rem;
+  margin-top: 2rem;
+}
+.prose h4 {
+  font-size: 1rem;
+  margin-top: 1.5rem;
+}
+.prose .anchor {
+  position: absolute;
+  left: -1.1rem;
+  color: var(--faint);
+  opacity: 0;
+  text-decoration: none;
+}
+.prose h2 .anchor {
+  top: 1.25rem;
+}
+.prose h2:hover .anchor,
+.prose h3:hover .anchor {
+  opacity: 1;
+}
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.prose strong {
+  font-weight: 600;
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--surface-2);
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+}
+.prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  overflow-wrap: normal;
+}
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  white-space: pre;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.25rem;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li + li {
+  margin-top: 0.3rem;
+}
+.prose li::marker {
+  color: var(--faint);
+}
+.prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1rem;
+  color: var(--muted);
+}
+.prose .table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.prose th {
+  text-align: left;
+  font-weight: 600;
+  background: var(--surface-2);
+}
+.prose th,
+.prose td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+  overflow-wrap: normal;
+}
+.prose tr:last-child td {
+  border-bottom: 0;
+}
+.prose td code {
+  white-space: nowrap;
+}
+.prose hr {
+  border-color: var(--hairline);
+  margin: 2rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: reduced motion must override every component animation */
+    animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: same */
+    animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: same */
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Grid children with code or long hashes must be allowed to shrink below their content width. */
+.grid > * {
+  min-width: 0;
+}

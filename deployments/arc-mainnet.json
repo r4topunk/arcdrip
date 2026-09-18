@@ -1,0 +1,27 @@
+{
+  "network": "arc-mainnet",
+  "chainId": 5042,
+  "rpcUrl": "https://rpc.mainnet.arc.io",
+  "explorer": "https://explorer.arc.io",
+  "token": {
+    "symbol": "USDC",
+    "address": "0x3600000000000000000000000000000000000000",
+    "decimals": 6
+  },
+  "contracts": {
+    "DripPool": {
+      "address": null,
+      "deployBlock": null,
+      "deployTx": null,
+      "verified": false,
+      "commit": null,
+      "deployer": null,
+      "salt": "keccak256(\"arcdrip.v1\")",
+      "saltHash": null,
+      "constructorArgs": {
+        "usdc": "0x3600000000000000000000000000000000000000"
+      }
+    }
+  },
+  "proofTxs": {}
+}

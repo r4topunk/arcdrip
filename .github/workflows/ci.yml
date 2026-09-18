@@ -1,0 +1,34 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      # pnpm version comes from "packageManager" in package.json
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          # pinned so `forge fmt --check` and the gas snapshot match local runs
+          version: v1.7.1
+      - run: pnpm install --frozen-lockfile
+      # root, sdk and web resolve the same playwright version from the lockfile: one browser install serves all
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm check

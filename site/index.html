@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ArcDrip: collective payroll on Arc</title>
+<meta name="description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway.">
+<meta property="og:title" content="ArcDrip: collective payroll on Arc">
+<meta property="og:description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232F6BAE'/><text x='16' y='22' font-family='system-ui' font-size='17' font-weight='700' fill='white' text-anchor='middle'>A</text></svg>">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#FFFFFF; --line:#DDE2E9; --ink:#121826; --muted:#555F6D; --accent:#2F6BAE;
+  --sans:ui-sans-serif,system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;padding:64px 16px}
+.wrap{max-width:720px;margin:0 auto}
+h1{margin:0;font-size:2.25rem;font-weight:600;letter-spacing:-.03em;line-height:1.05}
+p{margin:12px 0 0;color:var(--muted);text-wrap:pretty}
+.note{margin-top:32px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;font-size:.9rem}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ArcDrip</h1>
+  <p>A shared USDC stream for collectives on Arc: one rate, N shares, live runway. A pre-funded pool pays
+     USDC per second, split among members by mutable integer shares. Joining, leaving or re-weighting
+     mid-stream is one O(1) write that touches nobody else.</p>
+  <div class="note">
+    Scaffold page. The full project page (guarantees, addresses, proof transactions, comparison table)
+    is written in a later build phase. Source:
+    <a href="https://github.com/r4topunk/arcdrip">github.com/r4topunk/arcdrip</a>.
+  </div>
+</div>
+</body>
+</html>

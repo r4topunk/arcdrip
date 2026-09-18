@@ -1,0 +1,34 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.30"
+evm_version = "prague"
+optimizer = true
+optimizer_runs = 10_000
+# Foundry tests export accrual vectors to test/vectors/accrual.json, which the SDK tests replay (PRD 8.2).
+fs_permissions = [
+  { access = "read", path = "../deployments" },
+  { access = "read-write", path = "./test/vectors" },
+]
+
+[profile.default.fuzz]
+runs = 1000
+# fixed seed keeps .gas-snapshot reproducible; override with --fuzz-seed for exploration
+seed = "0x41726344726970"
+
+[profile.default.invariant]
+runs = 256
+depth = 100
+
+[rpc_endpoints]
+arc = "https://rpc.mainnet.arc.io"
+arc_testnet = "https://rpc.testnet.arc.io"
+
+[lint]
+# Streaming accrual is timestamp-based by design (rates are per second over days; validator drift is seconds).
+# See docs/SPEC.md.
+exclude_lints = ["block-timestamp"]
+
+[fmt]
+line_length = 120
