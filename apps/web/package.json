@@ -2,7 +2,7 @@
   "name": "@arcdrip/web",
   "version": "0.0.0",
   "private": true,
-  "description": "ArcDrip web app: Collective Payroll — create a pool, set shares, deposit, watch runway (static export, EN/PT-BR)",
+  "description": "ArcDrip web app: Collective Payroll \u2014 create a pool, set shares, deposit, watch runway (static export, EN/PT-BR)",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -11,8 +11,9 @@
     "start": "npx serve out",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check src test",
-    "format": "biome check --write src test"
+    "lint": "biome check src test scripts",
+    "format": "biome check --write src test scripts",
+    "e2e:smoke": "node scripts/e2e-smoke.mjs"
   },
   "dependencies": {
     "@arcdrip/sdk": "workspace:*",

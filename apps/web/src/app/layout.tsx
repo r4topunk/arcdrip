@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { Providers } from '@/components/providers';
+import { SiteFooter, SiteHeader } from '@/components/site-chrome';
+import { config } from '@/lib/config';
 import './globals.css';
 
 // Self-hosted at build time by next/font: no request to Google from the visitor's browser.
@@ -11,6 +14,7 @@ const description =
   'A shared USDC stream for collectives on Arc: one rate, N shares, live runway. Join, leave or re-weight mid-stream in one write.';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(`${config.siteUrl}/`),
   title: { default: 'ArcDrip: collective payroll on Arc', template: '%s · ArcDrip' },
   description,
   applicationName: 'ArcDrip',
@@ -28,7 +32,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body className="min-h-dvh overflow-x-clip antialiased">
-        <main id="main">{children}</main>
+        <Providers>
+          <SiteHeader />
+          <main id="main">{children}</main>
+          <SiteFooter />
+        </Providers>
       </body>
     </html>
   );
