@@ -1,39 +1,940 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ArcDrip: collective payroll on Arc</title>
-<meta name="description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway.">
-<meta property="og:title" content="ArcDrip: collective payroll on Arc">
+<title id="doc-title">ArcDrip: one USDC stream, split by shares</title>
+<meta id="doc-desc" name="description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway. Join, leave or re-weight mid-stream without touching anyone else.">
+<meta property="og:title" content="ArcDrip: one USDC stream, split by shares">
 <meta property="og:description" content="A shared USDC stream for collectives on Arc: one rate, N shares, live runway.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232F6BAE'/><text x='16' y='22' font-family='system-ui' font-size='17' font-weight='700' fill='white' text-anchor='middle'>A</text></svg>">
+<meta name="theme-color" content="#0A0C0F">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230A0C0F'/><path d='M5 16h7c5 0 6-8 15-8' stroke='%237FE0B8' stroke-width='3' fill='none'/><path d='M12 16h15' stroke='%237FE0B8' stroke-opacity='.6' stroke-width='3'/><path d='M5 16h7c5 0 6 8 15 8' stroke='%237FE0B8' stroke-opacity='.35' stroke-width='3' fill='none'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap">
 <style>
 :root{
-  color-scheme:light;
-  --bg:#FFFFFF; --line:#DDE2E9; --ink:#121826; --muted:#555F6D; --accent:#2F6BAE;
-  --sans:ui-sans-serif,system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+  --bg:#0A0C0F; --panel:#0D1014; --panel2:#0F1216; --line:#1F242B; --line2:#1C2026; --edge:#2A3038;
+  --ink:#E7EAEE; --hi:#F2F4F6; --soft:#C3C9D0; --muted:#9AA3AE; --faint:#7C8591; --dim:#5D6570;
+  --accent:#7FE0B8; --accent-hi:#A9F0D2; --on-accent:#06140E; --accent-bg:#0F1A16; --accent-line:#1F3A2F;
+  --green2:#4FB892; --green3:#2B7D63; --blue:#7DB4FF; --amber:#F2C46D; --red:#E5796B;
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --pad:80px;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;padding:64px 16px}
-.wrap{max-width:720px;margin:0 auto}
-h1{margin:0;font-size:2.25rem;font-weight:600;letter-spacing:-.03em;line-height:1.05}
-p{margin:12px 0 0;color:var(--muted);text-wrap:pretty}
-.note{margin-top:32px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;font-size:.9rem}
-a{color:var(--accent)}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-hi)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+h1,h2,h3{margin:0;font-weight:600;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+code,.mono{font-family:var(--mono)}
+svg{display:block}
+.wrap{max-width:1440px;margin:0 auto;padding-inline:var(--pad)}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:12px;z-index:10;background:var(--bg);padding:8px 12px}
+
+/* nav */
+.nav{border-bottom:1px solid var(--line2);position:sticky;top:0;z-index:5;background:rgba(10,12,15,.88);backdrop-filter:blur(10px)}
+.nav .wrap{height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px;font-family:var(--mono);font-size:13px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-family:var(--sans);font-size:16px;font-weight:600}
+.brand:hover{color:var(--ink)}
+.nav-left{display:flex;align-items:center;gap:28px}
+.nav-sub{color:var(--dim)}
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-links a{color:var(--muted)}.nav-links a:hover{color:var(--ink)}
+.lang{display:flex;border:1px solid var(--edge);border-radius:6px;overflow:hidden}
+.lang button{font:inherit;font-size:12px;background:transparent;color:var(--muted);border:0;padding:6px 10px;min-height:32px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+
+/* type */
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.kicker{font-family:var(--mono);font-size:12px;color:var(--faint)}
+h1{font-size:clamp(46px,6.4vw,92px);line-height:.97;letter-spacing:-.045em}
+h2{font-size:clamp(34px,3.7vw,52px);line-height:1.03;letter-spacing:-.035em}
+.dim{color:var(--dim)}
+.lead{font-size:18px;color:var(--muted)}
+.body{font-size:17px;color:var(--muted)}
+
+/* buttons */
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:8px;font-family:var(--sans);font-size:15px;font-weight:500;border:1px solid var(--edge);color:var(--ink);background:transparent;cursor:pointer}
+.btn:hover{color:var(--ink);border-color:var(--dim)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.btn.primary:hover{background:var(--accent-hi);border-color:var(--accent-hi);color:var(--on-accent)}
+
+/* sections */
+.sec{padding:96px 0;border-top:1px solid var(--line2)}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:end;margin-bottom:48px}
+.sec-head .t{display:flex;flex-direction:column;gap:12px}
+.card{border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+
+/* hero */
+.hero{padding:88px 0 96px}
+.hero-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:end;margin-bottom:56px}
+.hero-top .l{display:flex;flex-direction:column;gap:24px}
+.hero-top .r{display:flex;flex-direction:column;gap:28px;padding-bottom:10px}
+
+/* instrument */
+.inst{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+.inst-bar{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--faint)}
+.inst-bar .l{display:flex;align-items:center;gap:20px}
+.live{display:inline-flex;align-items:center;gap:8px;color:var(--accent)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.rates{display:flex;align-items:center;gap:8px}
+.rates button{font-family:var(--mono);font-size:12px;height:32px;padding:0 10px;border-radius:6px;border:1px solid var(--edge);background:transparent;color:var(--muted);cursor:pointer}
+.rates button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.split-svg{width:100%;height:auto}
+.flow{stroke-dasharray:2 12;animation:flow .9s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-14}}
+.m-stats{display:none;padding:0 14px 12px;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.ctrl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) 260px;border-top:1px solid var(--line)}
+.row{padding:14px 20px;border-right:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.row .bar{display:none;width:3px;height:40px;border-radius:2px}
+.row .info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.row .nm{font-size:14px;font-weight:500}
+.row .sub{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.row .claim{display:none;font-family:var(--mono);font-size:20px;font-weight:300;letter-spacing:-.02em;color:var(--hi)}
+.step{display:flex;align-items:center;gap:4px}
+.step button{width:44px;height:44px;border-radius:8px;border:1px solid var(--edge);background:var(--bg);color:var(--ink);font:400 18px var(--mono);cursor:pointer}
+.step button:hover{border-color:var(--dim)}
+.step output{width:30px;text-align:center;font-family:var(--mono);font-size:20px}
+.pay{padding:14px 20px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.pay button{height:44px;border:0;border-radius:8px;background:var(--accent);color:var(--on-accent);font:600 14px var(--sans);cursor:pointer}
+.pay button:hover{background:var(--accent-hi)}
+.pay span{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center}
+.note{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+/* problem */
+.probs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.prob{display:flex;flex-direction:column;overflow:hidden}
+.prob svg{width:100%;height:auto;border-bottom:1px solid var(--line)}
+.prob .tx{padding:22px;display:flex;flex-direction:column;gap:8px}
+.prob .lb{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.prob .ti{font-size:17px;font-weight:600}
+.prob .de{font-size:14px;line-height:1.55;color:var(--muted)}
+.prob.us{border-color:var(--accent);background:var(--accent-bg)}
+.prob.us svg{border-color:var(--accent-line)}
+.prob.us .lb{color:var(--accent)}.prob.us .de{color:#B8C4BE}
+
+/* timeline */
+.tl{padding:32px 32px 24px}
+.events{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-top:20px;margin-top:8px;border-top:1px solid var(--line)}
+.ev{display:flex;flex-direction:column;gap:8px}
+.ev .c{font-family:var(--mono);font-size:12px}
+.ev .ti{font-size:16px;font-weight:600}
+.ev .de{font-size:14px;line-height:1.55;color:var(--muted)}
+
+/* math */
+.math{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:center}
+.math .g{padding:28px;display:flex;flex-direction:column;gap:20px}
+.formula{padding:18px 20px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-family:var(--mono);font-size:18px;text-align:center}
+.formula sub{font-size:12px}
+.math .r{display:flex;flex-direction:column;gap:28px}
+.kv{display:flex;flex-direction:column;border-top:1px solid var(--line2)}
+.kv div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;padding:16px 0;border-bottom:1px solid var(--line2);align-items:baseline}
+.kv b{font-family:var(--mono);font-size:18px;font-weight:400;color:var(--hi)}
+.kv span{font-size:15px;line-height:1.55;color:var(--muted)}
+
+/* guarantees */
+.inv{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.inv .card{padding:24px 22px;display:flex;flex-direction:column;gap:16px}
+.inv .k{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.inv .d{font-size:14px;line-height:1.55;color:var(--muted)}
+.wide2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.wide2 > div{padding:22px 24px;border:1px solid var(--line);border-radius:12px;display:flex;gap:16px;align-items:center}
+.wide2 b{font-family:var(--mono);font-size:20px;font-weight:400;color:var(--hi);white-space:nowrap}
+.wide2 span{font-size:14px;line-height:1.55;color:var(--muted)}
+
+/* proof */
+.proof{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:14px 20px;border-bottom:1px solid var(--line2);vertical-align:top}
+.tbl thead th{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--faint);background:var(--panel2)}
+.tbl tbody th{font-family:var(--mono);font-weight:400;color:var(--hi);white-space:nowrap}
+.tbl td{color:var(--muted)}
+.tbl td.n{font-family:var(--mono);white-space:nowrap;color:var(--soft)}
+.tbl tr:last-child th,.tbl tr:last-child td{border-bottom:0}
+.status{padding:24px;display:flex;flex-direction:column;gap:16px}
+.status .h{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;color:var(--amber)}
+.status .h i{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+.status p{font-size:14px;color:var(--muted)}
+.addrs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--line2)}
+.addrs li{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:13px;color:var(--muted)}
+.addrs .tbd{font-family:var(--mono);color:var(--dim)}
+.docs{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.docs a{display:flex;flex-direction:column;gap:4px;padding:16px 18px;border:1px solid var(--line);border-radius:10px;color:var(--ink)}
+.docs a:hover{border-color:var(--accent);color:var(--ink)}
+.docs a span:last-child{font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+/* arc strip + cta */
+.arc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:72px}
+.arc > div{padding:22px 24px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--line)}
+.arc > div:last-child{border-right:0}
+.arc b{font-family:var(--mono);font-size:24px;font-weight:400;color:var(--hi)}
+.arc span{font-size:13px;line-height:1.5;color:var(--muted)}
+.cta{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:64px;align-items:center}
+.cta h2{font-size:clamp(36px,5.3vw,76px);line-height:.98;letter-spacing:-.045em}
+.cta .r{display:flex;flex-direction:column;gap:16px}
+pre.run{margin:0;padding:18px 22px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font-family:var(--mono);font-size:14px;line-height:1.75;color:var(--soft);overflow-x:auto}
+pre.run .p{color:var(--accent)}
+pre.run .c{color:var(--dim)}
+.foot{margin-top:72px;padding:24px 0 48px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;gap:16px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+.only-m{display:none}
+
+@media (max-width:1100px){
+  :root{--pad:40px}
+  .nav-sub{display:none}
+  .probs,.inv{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prob.us{grid-column:span 2}
+  .events{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .docs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .proof,.math{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  :root{--pad:20px}
+  .nav .wrap{height:60px}
+  .nav-links a:not(.gh){display:none}
+  .hero{padding:48px 0 56px}
+  .hero-top,.sec-head,.cta{grid-template-columns:minmax(0,1fr);gap:24px}
+  .hero-top{margin-bottom:32px}
+  .hero .btns{flex-direction:column}.hero .btns .btn{width:100%}
+  .lead,.body{font-size:16px}
+  .sec{padding:64px 0}
+  .sec-head{margin-bottom:32px}
+  .only-d{display:none}.only-m{display:block}
+  .inst-bar{padding:12px 14px}
+  .inst-bar .pool{display:none}
+  .rates-m{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:12px 14px 0}
+  .rates-m button{height:44px}
+  .m-stats{display:flex}
+  .ctrl{display:flex;flex-direction:column}
+  .row{display:grid;grid-template-columns:3px minmax(0,1fr) auto;border-right:0;border-bottom:1px solid var(--line2);padding:12px 14px}
+  .row .bar{display:block}
+  .row .nm{font-size:11px;font-weight:400;font-family:var(--mono);color:var(--muted)}
+  .row .sub.fn{display:none}
+  .row .claim{display:block}
+  .step output{width:24px;font-size:17px}
+  .pay{padding:14px}
+  .pay button{height:48px;font-size:15px}
+  .probs,.inv,.events,.docs,.wide2,.proof{grid-template-columns:minmax(0,1fr)}
+  .prob.us{grid-column:auto}
+  .prob .tx{padding:18px}
+  .tl{padding:16px 12px 8px}
+  .events{gap:0;padding-top:0;border-top:0}
+  .ev{padding:16px 0;border-top:1px solid var(--line2)}
+  .math .g{padding:16px 12px 14px}
+  .formula{font-size:15px;padding:14px}
+  .kv div{grid-template-columns:76px minmax(0,1fr)}
+  .kv b{font-size:16px}
+  .wide2 > div{flex-direction:column;align-items:flex-start;gap:6px}
+  .tbl th,.tbl td{padding:12px 14px}
+  .tbl .hide-m{display:none}
+  .arc{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:40px}
+  .arc > div:nth-child(2){border-right:0}
+  .arc > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .arc b{font-size:20px}
+  .cta .btns{flex-direction:column}.cta .btns .btn{width:100%}
+  .foot{flex-direction:column;margin-top:48px;padding-bottom:32px;font-size:11px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .flow,.live i{animation:none}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>ArcDrip</h1>
-  <p>A shared USDC stream for collectives on Arc: one rate, N shares, live runway. A pre-funded pool pays
-     USDC per second, split among members by mutable integer shares. Joining, leaving or re-weighting
-     mid-stream is one O(1) write that touches nobody else.</p>
-  <div class="note">
-    Scaffold page. The full project page (guarantees, addresses, proof transactions, comparison table)
-    is written in a later build phase. Source:
-    <a href="https://github.com/r4topunk/arcdrip">github.com/r4topunk/arcdrip</a>.
+<a class="skip" href="#problem" data-i18n="skip">Skip to the problem</a>
+
+<header class="nav">
+  <div class="wrap">
+    <div class="nav-left">
+      <a class="brand" href="#top" aria-label="ArcDrip home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7FE0B8" stroke-width="2" aria-hidden="true"><path d="M2 12h6c4 0 5-7 14-7"/><path d="M8 12h14" opacity=".6"/><path d="M2 12h6c4 0 5 7 14 7" opacity=".35"/></svg>
+        ArcDrip
+      </a>
+      <span class="nav-sub" data-i18n="navSub">shared USDC stream · Arc</span>
+    </div>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#problem" data-i18n="navProblem">problem</a>
+      <a href="#timeline" data-i18n="navHow">how it works</a>
+      <a href="#math" data-i18n="navMath">math</a>
+      <a href="#guarantees" data-i18n="navGuar">guarantees</a>
+      <a href="#proof" data-i18n="navProof">proof</a>
+      <a class="gh" href="https://github.com/r4topunk/arcdrip">github</a>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" id="lang-en" aria-pressed="true">EN</button>
+        <button type="button" id="lang-pt" aria-pressed="false">PT</button>
+      </div>
+    </nav>
   </div>
-</div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="h1">
+    <div class="wrap">
+      <div class="hero-top">
+        <div class="l">
+          <span class="eyebrow" data-i18n="kicker">▍ collective payroll, streamed</span>
+          <h1 id="h1" data-i18n="h1">One stream.<br><span class="dim">Split by shares,</span><br>every second.</h1>
+        </div>
+        <div class="r">
+          <p class="lead" data-i18n="lead">ArcDrip pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.</p>
+          <div class="btns">
+            <a class="btn primary" href="#timeline" data-i18n="ctaHow">See how it splits</a>
+            <a class="btn" href="https://github.com/r4topunk/arcdrip" data-i18n="ctaGithub">View on GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="inst" role="region" aria-label="Live split model">
+        <div class="inst-bar">
+          <div class="l">
+            <span class="live"><i></i><span data-i18n="streaming">STREAMING</span></span>
+            <span class="pool" data-i18n="poolTag">example pool · live model, try it</span>
+          </div>
+          <div class="rates only-d" role="group" aria-label="Pool rate">
+            <span data-i18n="rateWord">rate</span>
+            <button type="button" data-rate="0">1,000/mo</button>
+            <button type="button" data-rate="1">3,000/mo</button>
+            <button type="button" data-rate="2">10,000/mo</button>
+          </div>
+        </div>
+        <div class="rates rates-m only-m" role="group" aria-label="Pool rate">
+          <button type="button" data-rate="0">1,000/mo</button>
+          <button type="button" data-rate="1">3,000/mo</button>
+          <button type="button" data-rate="2">10,000/mo</button>
+        </div>
+
+        <!-- desktop split -->
+        <svg class="split-svg only-d" viewBox="0 0 1278 440" fill="none" aria-hidden="true">
+          <path d="M0 110H1278M0 220H1278M0 330H1278" stroke="#14181D"/>
+          <rect x="40.5" y="40.5" width="170" height="360" rx="10" stroke="#2A3038" fill="#0F1318"/>
+          <rect id="d-tank" x="41" y="41" width="169" height="0" fill="#7FE0B8" opacity=".14"/>
+          <path id="d-tank-line" d="M41 41H210" stroke="#7FE0B8" stroke-width="1.5"/>
+          <text x="60" y="72" fill="#7C8591" style="font:400 11px var(--mono);letter-spacing:.08em" data-i18n="svgPool">POOL</text>
+          <text id="d-unstreamed" x="60" y="100" fill="#F2F4F6" style="font:500 20px var(--mono)"></text>
+          <text x="60" y="120" fill="#7C8591" style="font:400 12px var(--mono)" data-i18n="svgUnstreamed">USDC unstreamed</text>
+          <text x="60" y="360" fill="#7C8591" style="font:400 11px var(--mono);letter-spacing:.08em" data-i18n="svgRunway">RUNWAY</text>
+          <text id="d-runway" x="60" y="382" fill="#F2F4F6" style="font:500 15px var(--mono)"></text>
+          <path d="M211 220H268" stroke="#7FE0B8" stroke-width="2"/>
+          <circle cx="300" cy="220" r="32" fill="#0A0C0F" stroke="#7FE0B8" stroke-width="1.5"/>
+          <text x="300" y="224" text-anchor="middle" fill="#F2F4F6" style="font:500 12px var(--mono)" data-i18n="rateWord">rate</text>
+          <text id="d-persec" x="300" y="276" text-anchor="middle" fill="#7C8591" style="font:400 11px var(--mono)"></text>
+          <text x="300" y="292" text-anchor="middle" fill="#5D6570" style="font:400 10px var(--mono)">USDC / s</text>
+          <g id="d-bands"></g>
+          <g id="d-members"></g>
+        </svg>
+
+        <!-- mobile split -->
+        <svg class="split-svg only-m" viewBox="0 0 350 230" fill="none" aria-hidden="true">
+          <rect x="10.5" y="20.5" width="62" height="190" rx="8" stroke="#2A3038" fill="#0F1318"/>
+          <rect id="m-tank" x="11" y="21" width="61" height="0" fill="#7FE0B8" opacity=".14"/>
+          <path id="m-tank-line" d="M11 21H72" stroke="#7FE0B8" stroke-width="1.5"/>
+          <text x="41" y="40" text-anchor="middle" fill="#7C8591" style="font:400 9px var(--mono);letter-spacing:.08em" data-i18n="svgPool">POOL</text>
+          <path d="M73 115H86" stroke="#7FE0B8" stroke-width="1.5"/>
+          <circle cx="104" cy="115" r="18" fill="#0A0C0F" stroke="#7FE0B8" stroke-width="1.5"/>
+          <text x="104" y="118.5" text-anchor="middle" fill="#F2F4F6" style="font:500 9px var(--mono)" data-i18n="rateWord">rate</text>
+          <g id="m-bands"></g>
+          <g id="m-members"></g>
+        </svg>
+        <div class="m-stats"><span id="m-left"></span><span id="m-runway"></span></div>
+
+        <div class="ctrl">
+          <div id="rows" style="display:contents"></div>
+          <div class="pay">
+            <button type="button" id="pay" data-i18n="payBtn">Pay everyone</button>
+            <span id="pay-line" aria-live="polite"></span>
+          </div>
+        </div>
+      </div>
+      <p class="note" data-i18n="heroNote">Example numbers, not a live pool. The ticking uses the same accrual math as the contract.</p>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="sec" id="problem" aria-labelledby="h-problem">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="t">
+          <span class="kicker" data-i18n="k01">01 / the problem</span>
+          <h2 id="h-problem" data-i18n="problemH2">Paying a team onchain today means picking a compromise.</h2>
+        </div>
+        <p class="body" data-i18n="problemP">Streams know about time but not about teams. Splitters know about teams but not about time. Manual transfers know about neither. ArcDrip is the merge: a split that happens <em>over time</em>.</p>
+      </div>
+      <div class="probs">
+        <div class="card prob">
+          <svg viewBox="0 0 300 200" fill="none" aria-hidden="true">
+            <path d="M24 170H276" stroke="#2A3038"/>
+            <g fill="#5D6570" style="font:400 10px var(--mono)"><text x="24" y="188">jan</text><text x="104" y="188">feb</text><text x="184" y="188">mar</text><text x="256" y="188">apr</text></g>
+            <g fill="#5D6570"><circle cx="30" cy="40" r="5"/><circle cx="110" cy="40" r="5"/><circle cx="190" cy="40" r="5"/><circle cx="262" cy="40" r="5"/><circle cx="30" cy="75" r="5"/><circle cx="110" cy="75" r="5"/><circle cx="262" cy="75" r="5"/><circle cx="30" cy="110" r="5"/><circle cx="110" cy="110" r="5"/><circle cx="190" cy="110" r="5"/><circle cx="262" cy="110" r="5"/><circle cx="30" cy="145" r="5"/><circle cx="190" cy="145" r="5"/><circle cx="262" cy="145" r="5"/></g>
+            <circle cx="190" cy="75" r="9" stroke="#E5796B" stroke-dasharray="3 3"/>
+            <circle cx="110" cy="145" r="9" stroke="#E5796B" stroke-dasharray="3 3"/>
+            <text x="190" y="100" text-anchor="middle" fill="#E5796B" style="font:400 11px var(--mono)" data-i18n="svgMissed">missed</text>
+          </svg>
+          <div class="tx"><span class="lb" data-i18n="p1l">MANUAL TRANSFERS</span><span class="ti" data-i18n="p1t">Someone signs every period.</span><span class="de" data-i18n="p1d">Miss one and payroll is late. Amounts live in a spreadsheet. Runway is a guess.</span></div>
+        </div>
+        <div class="card prob">
+          <svg viewBox="0 0 300 200" fill="none" aria-hidden="true">
+            <g stroke="#5D6570"><rect x="24" y="30" width="40" height="30" rx="4"/><rect x="236" y="30" width="40" height="30" rx="4"/><rect x="24" y="70" width="40" height="30" rx="4"/><rect x="236" y="70" width="40" height="30" rx="4"/><rect x="24" y="110" width="40" height="30" rx="4"/><rect x="236" y="110" width="40" height="30" rx="4"/><rect x="24" y="150" width="40" height="30" rx="4"/><rect x="236" y="150" width="40" height="30" rx="4"/></g>
+            <g stroke="#5D6570" stroke-width="2" stroke-dasharray="2 6"><path d="M64 45H236"/><path d="M64 85H236"/><path d="M64 125H236"/><path d="M64 165H236"/></g>
+            <g stroke="#E5796B" stroke-width="2"><path d="M144 39l12 12M156 39l-12 12"/><path d="M144 79l12 12M156 79l-12 12"/><path d="M144 119l12 12M156 119l-12 12"/><path d="M144 159l12 12M156 159l-12 12"/></g>
+            <text x="150" y="20" text-anchor="middle" fill="#E5796B" style="font:400 11px var(--mono)" data-i18n="svgRecreate">re-weight = cancel ×4, recreate ×4</text>
+          </svg>
+          <div class="tx"><span class="lb" data-i18n="p2l">ONE STREAM PER PERSON</span><span class="ti" data-i18n="p2t">N streams, N balances.</span><span class="de" data-i18n="p2d">Changing one weight means rebuilding every stream. The treasury’s runway is scattered across N deposits.</span></div>
+        </div>
+        <div class="card prob">
+          <svg viewBox="0 0 300 200" fill="none" aria-hidden="true">
+            <rect x="24" y="85" width="56" height="30" rx="4" stroke="#5D6570"/>
+            <text x="52" y="104" text-anchor="middle" fill="#9AA3AE" style="font:400 11px var(--mono)">+100</text>
+            <path d="M80 100H140M140 100L200 40H236M140 100L200 80H236M140 100L200 120H236M140 100L200 160H236" stroke="#5D6570" stroke-width="2"/>
+            <g fill="#9AA3AE" style="font:400 11px var(--mono)"><text x="244" y="44">37.5</text><text x="244" y="84">25</text><text x="244" y="124">25</text><text x="244" y="164">12.5</text></g>
+            <text x="150" y="190" text-anchor="middle" fill="#E5796B" style="font:400 11px var(--mono)" data-i18n="svgInstant">instant · no clock · no runway</text>
+          </svg>
+          <div class="tx"><span class="lb" data-i18n="p3l">SPLITTER</span><span class="ti" data-i18n="p3t">Divides what arrives, at once.</span><span class="de" data-i18n="p3d">Great for revenue, wrong for salaries: there’s no notion of time, so nothing is earned per second.</span></div>
+        </div>
+        <div class="card prob us">
+          <svg viewBox="0 0 300 200" fill="none" aria-hidden="true">
+            <rect x="24" y="60" width="44" height="80" rx="5" stroke="#7FE0B8"/>
+            <rect x="25" y="96" width="42" height="43" fill="#7FE0B8" opacity=".2"/>
+            <path d="M68 100H100" stroke="#7FE0B8" stroke-width="2"/>
+            <circle cx="112" cy="100" r="12" stroke="#7FE0B8"/>
+            <g fill="#7FE0B8"><path d="M124 94C180 94 190 40 236 40V58C190 58 180 97 124 97Z" opacity=".5"/><path d="M124 97C180 97 190 84 236 84V96C190 96 180 99 124 99Z" opacity=".4"/><path d="M124 99C180 99 190 122 236 122V134C190 134 180 102 124 102Z" opacity=".3"/><path d="M124 102C180 102 190 162 236 162V168C190 168 180 105 124 105Z" opacity=".22"/></g>
+            <text x="150" y="190" text-anchor="middle" fill="#7FE0B8" style="font:400 11px var(--mono)" data-i18n="svgOnePool">one pool · one rate · shares over time</text>
+          </svg>
+          <div class="tx"><span class="lb">ARCDRIP</span><span class="ti" data-i18n="p4t">A split that streams.</span><span class="de" data-i18n="p4d">One balance and one runway. Re-weighting is one write. Anyone can press pay, and money always lands at the member’s address.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="sec" id="timeline" aria-labelledby="h-timeline">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="t">
+          <span class="kicker" data-i18n="k02">02 / how it works</span>
+          <h2 id="h-timeline" data-i18n="tlH2">The rate is constant.<br>The slices move.</h2>
+        </div>
+        <p class="body" data-i18n="tlP">Read it left to right: the pool’s whole rate is the height of the band, and each color is one member’s slice. Every event below is a single transaction.</p>
+      </div>
+      <div class="card tl">
+        <svg class="only-d" viewBox="0 0 1214 400" fill="none" style="width:100%;height:auto" role="img" aria-labelledby="tl-title">
+          <title id="tl-title" data-i18n="tlAlt">Stacked chart of each member’s slice of the stream over time, across four events.</title>
+          <path d="M40 330H1200" stroke="#2A3038"/>
+          <text x="0" y="94" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="rateWord">rate</text>
+          <path d="M36 90H40M36 330H40" stroke="#2A3038"/>
+          <text x="1200" y="352" text-anchor="end" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgTime">time →</text>
+          <g opacity=".88">
+            <rect x="40" y="227.14" width="300" height="102.86" fill="#7FE0B8"/><rect x="40" y="158.57" width="300" height="68.57" fill="#4FB892"/><rect x="40" y="90" width="300" height="68.57" fill="#2B7D63"/>
+            <rect x="340" y="240" width="360" height="90" fill="#7FE0B8"/><rect x="340" y="180" width="360" height="60" fill="#4FB892"/><rect x="340" y="120" width="360" height="60" fill="#2B7D63"/><rect x="340" y="90" width="360" height="30" fill="#7DB4FF"/>
+            <rect x="860" y="240" width="180" height="90" fill="#7FE0B8"/><rect x="860" y="180" width="180" height="60" fill="#4FB892"/><rect x="860" y="120" width="180" height="60" fill="#2B7D63"/><rect x="860" y="90" width="180" height="30" fill="#7DB4FF"/>
+            <rect x="1040" y="210" width="160" height="120" fill="#7FE0B8"/><rect x="1040" y="130" width="160" height="80" fill="#4FB892"/><rect x="1040" y="90" width="160" height="40" fill="#7DB4FF"/>
+          </g>
+          <rect x="700.5" y="90.5" width="159" height="239" stroke="#F2C46D" fill="#F2C46D" fill-opacity=".04" stroke-dasharray="4 4"/>
+          <text x="780" y="206" text-anchor="middle" fill="#F2C46D" style="font:500 12px var(--mono)" data-i18n="svgFrozen">FROZEN</text>
+          <text x="780" y="224" text-anchor="middle" fill="#9AA3AE" style="font:400 11px var(--mono)" data-i18n="svgNoStream">nothing streams,</text>
+          <text x="780" y="239" text-anchor="middle" fill="#9AA3AE" style="font:400 11px var(--mono)" data-i18n="svgNoOwe">nothing is owed</text>
+          <g stroke="#E7EAEE" opacity=".55" stroke-dasharray="2 4"><path d="M340 40V330"/><path d="M700 40V330"/><path d="M860 40V330"/><path d="M1040 40V330"/></g>
+          <g style="font:500 12px var(--mono)">
+            <circle cx="340" cy="40" r="11" fill="#0A0C0F" stroke="#E7EAEE"/><text x="340" y="44" text-anchor="middle" fill="#E7EAEE">1</text>
+            <circle cx="700" cy="40" r="11" fill="#0A0C0F" stroke="#E7EAEE"/><text x="700" y="44" text-anchor="middle" fill="#E7EAEE">2</text>
+            <circle cx="860" cy="40" r="11" fill="#0A0C0F" stroke="#E7EAEE"/><text x="860" y="44" text-anchor="middle" fill="#E7EAEE">3</text>
+            <circle cx="1040" cy="40" r="11" fill="#0A0C0F" stroke="#E7EAEE"/><text x="1040" y="44" text-anchor="middle" fill="#E7EAEE">4</text>
+          </g>
+          <g style="font:500 12px var(--mono)" fill="#06140E">
+            <text x="56" y="284" data-i18n="svgA">A · 3 shares · 42.9%</text>
+            <text x="56" y="198">B · 2 · 28.6%</text>
+            <text x="356" y="109" data-i18n="svgDjoins">D joins · 1 share</text>
+            <text x="1056" y="114">D · 16.7%</text>
+          </g>
+          <text x="56" y="129" fill="#E7EAEE" style="font:500 12px var(--mono)">C · 2 · 28.6%</text>
+          <text x="56" y="370" fill="#5D6570" style="font:400 11px var(--mono)">createPool · deposit · setSharesBatch</text>
+        </svg>
+        <svg class="only-m" viewBox="0 0 350 240" fill="none" style="width:100%;height:auto" role="img" aria-labelledby="tl-title-m">
+          <title id="tl-title-m" data-i18n="tlAlt">Stacked chart of each member’s slice of the stream over time, across four events.</title>
+          <path d="M8 200H342" stroke="#2A3038"/>
+          <g opacity=".88">
+            <rect x="8" y="131.43" width="86.4" height="68.57" fill="#7FE0B8"/><rect x="8" y="85.71" width="86.4" height="45.71" fill="#4FB892"/><rect x="8" y="40" width="86.4" height="45.71" fill="#2B7D63"/>
+            <rect x="94.4" y="140" width="103.7" height="60" fill="#7FE0B8"/><rect x="94.4" y="100" width="103.7" height="40" fill="#4FB892"/><rect x="94.4" y="60" width="103.7" height="40" fill="#2B7D63"/><rect x="94.4" y="40" width="103.7" height="20" fill="#7DB4FF"/>
+            <rect x="244.2" y="140" width="51.8" height="60" fill="#7FE0B8"/><rect x="244.2" y="100" width="51.8" height="40" fill="#4FB892"/><rect x="244.2" y="60" width="51.8" height="40" fill="#2B7D63"/><rect x="244.2" y="40" width="51.8" height="20" fill="#7DB4FF"/>
+            <rect x="296" y="120" width="46" height="80" fill="#7FE0B8"/><rect x="296" y="66.67" width="46" height="53.33" fill="#4FB892"/><rect x="296" y="40" width="46" height="26.67" fill="#7DB4FF"/>
+          </g>
+          <rect x="198.6" y="40.5" width="45.1" height="159" stroke="#F2C46D" fill="#F2C46D" fill-opacity=".05" stroke-dasharray="3 3"/>
+          <text x="221" y="124" text-anchor="middle" fill="#F2C46D" style="font:500 9px var(--mono)" data-i18n="svgFrozenM">FROZEN</text>
+          <g stroke="#E7EAEE" opacity=".5" stroke-dasharray="2 3"><path d="M94.4 22V200"/><path d="M198.1 22V200"/><path d="M244.2 22V200"/><path d="M296 22V200"/></g>
+          <g style="font:500 10px var(--mono)">
+            <circle cx="94.4" cy="16" r="9" fill="#0A0C0F" stroke="#E7EAEE"/><text x="94.4" y="19.5" text-anchor="middle" fill="#E7EAEE">1</text>
+            <circle cx="198.1" cy="16" r="9" fill="#0A0C0F" stroke="#E7EAEE"/><text x="198.1" y="19.5" text-anchor="middle" fill="#E7EAEE">2</text>
+            <circle cx="244.2" cy="16" r="9" fill="#0A0C0F" stroke="#E7EAEE"/><text x="244.2" y="19.5" text-anchor="middle" fill="#E7EAEE">3</text>
+            <circle cx="296" cy="16" r="9" fill="#0A0C0F" stroke="#E7EAEE"/><text x="296" y="19.5" text-anchor="middle" fill="#E7EAEE">4</text>
+          </g>
+          <g style="font:500 10px var(--mono)" fill="#06140E"><text x="14" y="170">A · 3</text><text x="14" y="112">B · 2</text><text x="100" y="53">D · 1</text></g>
+          <text x="14" y="67" fill="#E7EAEE" style="font:500 10px var(--mono)">C · 2</text>
+          <text x="342" y="222" text-anchor="end" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgTime">time →</text>
+          <text x="8" y="222" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgRateConst">rate ↑ constant</text>
+        </svg>
+        <div class="events">
+          <div class="ev"><span class="c" style="color:var(--blue)">1 · setShares(D, 1)</span><span class="ti" data-i18n="e1t">Someone joins mid-stream</span><span class="de" data-i18n="e1d">Everyone’s slice shrinks from this second. One write; nobody else’s storage is touched.</span></div>
+          <div class="ev"><span class="c" style="color:var(--amber)" data-i18n="e2c">2 · balance hits zero</span><span class="ti" data-i18n="e2t">The pool freezes by itself</span><span class="de" data-i18n="e2d">No keeper, no debt. It can never owe more than it holds.</span></div>
+          <div class="ev"><span class="c" style="color:var(--accent)">3 · deposit(amount)</span><span class="ti" data-i18n="e3t">Anyone tops it up</span><span class="de" data-i18n="e3d">Streaming resumes from the deposit’s timestamp. Frozen time isn’t back-paid.</span></div>
+          <div class="ev"><span class="c">4 · setShares(C, 0)</span><span class="ti" data-i18n="e4t">Someone leaves</span><span class="de" data-i18n="e4d">C stops earning, but everything C already accrued stays withdrawable forever.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATH -->
+  <section class="sec" id="math" aria-labelledby="h-math">
+    <div class="wrap math">
+      <div class="card g">
+        <svg class="only-d" viewBox="0 0 640 320" fill="none" style="width:100%;height:auto" role="img" aria-labelledby="m-title">
+          <title id="m-title" data-i18n="mathAlt">The pool’s index rises over time; a member’s pay is the gap between the index now and the index when they joined.</title>
+          <path d="M30 290H620M30 20V290" stroke="#2A3038"/>
+          <text x="36" y="30" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgIdx">accIndex · USDC earned per share since start</text>
+          <text x="620" y="310" text-anchor="end" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgTime">time →</text>
+          <path d="M30 280L160 220L310 159L380 159L460 128L560 70" stroke="#7FE0B8" stroke-width="2.5"/>
+          <path d="M310 159H380" stroke="#F2C46D" stroke-width="2.5"/>
+          <text x="345" y="150" text-anchor="middle" fill="#F2C46D" style="font:400 10px var(--mono)" data-i18n="svgFrozenLc">frozen</text>
+          <circle cx="160" cy="220" r="5" fill="#7DB4FF"/>
+          <path d="M160 220H580" stroke="#7DB4FF" stroke-dasharray="3 4"/>
+          <text x="172" y="240" fill="#7DB4FF" style="font:400 11px var(--mono)" data-i18n="svgDstores">D joins → stores index_D</text>
+          <circle cx="560" cy="70" r="5" fill="#7FE0B8"/>
+          <path d="M580 70H588V220H580" stroke="#E7EAEE"/>
+          <text x="596" y="149" fill="#E7EAEE" style="font:500 12px var(--mono)">Δ</text>
+          <text x="548" y="58" text-anchor="end" fill="#7FE0B8" style="font:400 11px var(--mono)" data-i18n="svgNow">now</text>
+          <text x="70" y="270" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgSlope">slope = rate ÷ totalShares</text>
+        </svg>
+        <svg class="only-m" viewBox="0 0 350 230" fill="none" style="width:100%;height:auto" role="img" aria-labelledby="m-title-m">
+          <title id="m-title-m" data-i18n="mathAlt">The pool’s index rises over time; a member’s pay is the gap between the index now and the index when they joined.</title>
+          <path d="M20 200H340M20 16V200" stroke="#2A3038"/>
+          <text x="26" y="24" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgIdxShort">accIndex · earned per share</text>
+          <path d="M20 195L90 160L170 124L208 124L252 106L305 72" stroke="#7FE0B8" stroke-width="2.5"/>
+          <path d="M170 124H208" stroke="#F2C46D" stroke-width="2.5"/>
+          <text x="189" y="116" text-anchor="middle" fill="#F2C46D" style="font:400 10px var(--mono)" data-i18n="svgFrozenLc">frozen</text>
+          <circle cx="90" cy="160" r="4.5" fill="#7DB4FF"/>
+          <path d="M90 160H318" stroke="#7DB4FF" stroke-dasharray="3 4"/>
+          <text x="96" y="178" fill="#7DB4FF" style="font:400 10px var(--mono)" data-i18n="svgDstores">D joins → stores index_D</text>
+          <circle cx="305" cy="72" r="4.5" fill="#7FE0B8"/>
+          <path d="M318 72H324V160H318" stroke="#E7EAEE"/>
+          <text x="330" y="120" fill="#E7EAEE" style="font:500 12px var(--mono)">Δ</text>
+          <text x="296" y="62" text-anchor="end" fill="#7FE0B8" style="font:400 10px var(--mono)" data-i18n="svgNow">now</text>
+          <text x="340" y="220" text-anchor="end" fill="#5D6570" style="font:400 10px var(--mono)" data-i18n="svgTime">time →</text>
+        </svg>
+        <div class="formula">claimable<sub>D</sub> = shares<sub>D</sub> × <span style="color:var(--accent)">Δ</span></div>
+      </div>
+      <div class="r">
+        <div class="t" style="display:flex;flex-direction:column;gap:12px">
+          <span class="kicker" data-i18n="k03">03 / the math</span>
+          <h2 id="h-math" data-i18n="mathH2">Why one write is enough.</h2>
+          <p class="body" data-i18n="mathP">The pool keeps a single running number: how much one share has earned since the start. Each member only remembers where that number was when they joined. Their pay is the gap, times their shares.</p>
+        </div>
+        <div class="kv">
+          <div><b>O(1)</b><span data-i18n="kv1">Join, leave or re-weight settles one member and touches nobody else.</span></div>
+          <div><b>18 dp</b><span data-i18n="kv2">Kept in wad internally, so 1 USDC a month never rounds to zero.</span></div>
+          <div><b>floor ↓</b><span data-i18n="kv3">Every rounding favours the pool, never a member.</span></div>
+        </div>
+        <a href="https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md" data-i18n="specLink">Full spec and the Solidity →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUARANTEES -->
+  <section class="sec" id="guarantees" aria-labelledby="h-guar">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="t">
+          <span class="kicker" data-i18n="k04">04 / guarantees</span>
+          <h2 id="h-guar" data-i18n="guarH2">What’s earned is theirs.</h2>
+        </div>
+        <p class="body" data-i18n="guarP">An owner can pause, re-weight or cancel the future. Nothing can touch the past. Each rule is a Foundry invariant, checked after every step of randomized runs.</p>
+      </div>
+      <div class="inv">
+        <div class="card"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><rect x=".5" y="8.5" width="28" height="31" rx="3" stroke="#5D6570"/><rect x="35.5" y="14.5" width="28" height="25" rx="3" stroke="#7FE0B8" fill="#7FE0B8" fill-opacity=".2"/></svg><span class="k" data-i18n="i1k">I1 · no over-accounting</span><span class="d" data-i18n="i1d">What members can claim never exceeds what streamed.</span></div>
+        <div class="card"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="28" height="39" rx="3" stroke="#5D6570"/><rect x="35.5" y="12.5" width="28" height="27" rx="3" stroke="#7FE0B8" fill="#7FE0B8" fill-opacity=".2"/></svg><span class="k" data-i18n="i2k">I2 · solvent</span><span class="d" data-i18n="i2d">A pool never owes more than its balance.</span></div>
+        <div class="card"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="63" height="39" rx="3" stroke="#5D6570"/><g stroke="#7FE0B8"><rect x="6.5" y="16.5" width="14" height="17"/><rect x="25.5" y="10.5" width="14" height="23"/><rect x="44.5" y="22.5" width="14" height="11"/></g></svg><span class="k" data-i18n="i3k">I3 · backed</span><span class="d" data-i18n="i3d">All pools together are covered by the contract’s USDC.</span></div>
+        <div class="card"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><path d="M2 32L20 22L38 14L62 6" stroke="#7FE0B8" stroke-width="2"/><path d="M38 14L50 30" stroke="#E5796B" stroke-dasharray="3 3"/><path d="M46 26l8 8M54 26l-8 8" stroke="#E5796B"/></svg><span class="k" data-i18n="i4k">I4 · owner-proof</span><span class="d" data-i18n="i4d">No owner action ever lowers anyone’s claimable.</span></div>
+        <div class="card"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><path d="M2 36L62 4" stroke="#5D6570" stroke-dasharray="3 3"/><path d="M2 38L20 29L38 21L62 8" stroke="#7FE0B8" stroke-width="2"/></svg><span class="k" data-i18n="i5k">I5 · never over-pays</span><span class="d" data-i18n="i5d">Checked against an exact rational reference model.</span></div>
+      </div>
+      <div class="wide2">
+        <div><b>skip ≠ revert</b><span data-i18n="skipD">In “Pay everyone”, a blocked address is skipped and its balance restored. The rest still get paid.</span></div>
+        <div><b data-i18n="adminK">0 admin keys</b><span data-i18n="adminD">One immutable contract. No upgrade, no token, no fees. Pool owners can be an EOA, a Safe or a DAO.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section class="sec" id="proof" aria-labelledby="h-proof">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="t">
+          <span class="kicker" data-i18n="k05">05 / what’s built</span>
+          <h2 id="h-proof" data-i18n="proofH2">Open source, tested, headed to mainnet.</h2>
+        </div>
+        <p class="body" data-i18n="proofP">An MIT-licensed building block: the contract, an SDK and the app that drives it. No token, no sale, no yield, no fees.</p>
+      </div>
+      <div class="proof">
+        <div class="card" style="overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th scope="col" data-i18n="colPart">PART</th><th scope="col" class="hide-m" data-i18n="colWhat">WHAT IT DOES</th><th scope="col" data-i18n="colTests">TESTS</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">DripPool.sol</th><td class="hide-m" data-i18n="part1">Immutable singleton holding many pools: index accrual, freeze on empty, pull withdrawals, blocklist-safe batch payout, cancel, two-step ownership</td><td class="n" data-i18n="part1n">182 (4 fork skipped)</td></tr>
+              <tr><th scope="row">@arcdrip/sdk</th><td class="hide-m" data-i18n="part2">viem actions, Zod schemas, the accrual math mirrored offchain, member discovery from logs</td><td class="n" data-i18n="part2n">217</td></tr>
+              <tr><th scope="row">apps/web</th><td class="hide-m" data-i18n="part3">“Collective Payroll”: create, fund, weight, watch, pay everyone. Static export, EN and PT-BR</td><td class="n" data-i18n="part3n">see repo</td></tr>
+              <tr><th scope="row">docs/</th><td class="hide-m" data-i18n="part4">Spec, threat model, measured gas table and the CCTP finding for Arc mainnet</td><td class="n">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card status">
+          <span class="h"><i></i><span data-i18n="statusLine">Mainnet deploy in progress</span></span>
+          <p data-i18n="statusP">Every package builds and its tests pass locally, including the invariant suite. The address and each proof transaction fill in as the deployment lands. Every wallet in the proof run belongs to the author.</p>
+          <ul class="addrs">
+            <li><span>DripPool</span><span class="tbd">TBD</span></li>
+            <li><span data-i18n="addr2">Deploy, verified on Sourcify</span><span class="tbd">TBD</span></li>
+            <li><span data-i18n="addr3">Proof pool, first deposit</span><span class="tbd">TBD</span></li>
+            <li><span data-i18n="addr4">withdrawFor paid by someone else</span><span class="tbd">TBD</span></li>
+            <li><span data-i18n="addr5">Join, freeze, resume, no back-pay</span><span class="tbd">TBD</span></li>
+            <li><span data-i18n="addr6">Pay everyone in one transaction</span><span class="tbd">TBD</span></li>
+            <li><span data-i18n="addr7">Cancel, member withdraws anyway</span><span class="tbd">TBD</span></li>
+          </ul>
+        </div>
+      </div>
+      <ul class="docs">
+        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/README.md"><span>README</span><span>README.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md"><span data-i18n="docSpec">Spec</span><span>docs/SPEC.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/THREATS.md"><span data-i18n="docThreats">Threat model</span><span>docs/THREATS.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/GAS.md"><span data-i18n="docGas">Gas costs</span><span>docs/GAS.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/docs/CCTP.md"><span data-i18n="docCctp">CCTP on Arc</span><span>docs/CCTP.md</span></a></li>
+        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/contracts/src/DripPool.sol"><span data-i18n="docContract">Contract</span><span>DripPool.sol</span></a></li>
+        <li><a href="https://github.com/r4topunk/arcdrip/tree/main/packages/sdk"><span>SDK</span><span>packages/sdk</span></a></li>
+        <li><a href="https://github.com/r4topunk/arcdrip/blob/main/LICENSE"><span data-i18n="docLicense">License (MIT)</span><span>LICENSE</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ARC + CTA -->
+  <section class="sec" id="arc" aria-labelledby="h-cta">
+    <div class="wrap">
+      <div class="arc">
+        <div><b>~0.002</b><span data-i18n="arc1">USDC to withdraw. On Arc, gas is paid in USDC.</span></div>
+        <div><b>&lt; 1 s</b><span data-i18n="arc2">Finality, so the live ticker and the chain agree.</span></div>
+        <div><b data-i18n="arc3k">1 asset</b><span data-i18n="arc3">Treasury, salary and gas are all native USDC.</span></div>
+        <div><b>greenfield</b><span data-i18n="arc4">No Sablier, Superfluid or 0xSplits on Arc yet.</span></div>
+      </div>
+      <div class="cta">
+        <h2 id="h-cta" data-i18n="ctaH2">Open the tap.<br><span class="dim">Shares do the rest.</span></h2>
+        <div class="r">
+          <pre class="run"><span class="p">$</span> git clone https://github.com/r4topunk/arcdrip
+<span class="p">$</span> cd arcdrip &amp;&amp; pnpm install
+<span class="p">$</span> pnpm check            <span class="c"># build + tests + lint</span>
+<span class="p">$</span> pnpm --filter @arcdrip/web dev</pre>
+          <div class="btns">
+            <a class="btn primary" href="https://github.com/r4topunk/arcdrip" data-i18n="ctaGithub">View on GitHub</a>
+            <a class="btn" href="https://github.com/r4topunk/arcdrip/blob/main/docs/SPEC.md" data-i18n="ctaSpec">Read the spec</a>
+          </div>
+        </div>
+      </div>
+      <footer class="foot">
+        <span data-i18n="footL">ArcDrip · MIT · experimental, not externally audited</span>
+        <span data-i18n="footR">No token, no fees, no admin key</span>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const STORAGE_KEY = 'arcdrip:lang';
+  const I18N = {
+    en: {
+      skip:'Skip to the problem', navSub:'shared USDC stream · Arc',
+      navProblem:'problem', navHow:'how it works', navMath:'math', navGuar:'guarantees', navProof:'proof',
+      kicker:'▍ collective payroll, streamed',
+      h1:'One stream.<br><span class="dim">Split by shares,</span><br>every second.',
+      lead:'ArcDrip pays a whole team from one pre-funded pool. One rate goes in; shares decide who gets what. Change anyone’s share and everyone re-prices from that second — nothing already earned moves.',
+      ctaHow:'See how it splits', ctaGithub:'View on GitHub', ctaSpec:'Read the spec',
+      streaming:'STREAMING', poolTag:'example pool · live model, try it', rateWord:'rate',
+      svgPool:'POOL', svgUnstreamed:'USDC unstreamed', svgRunway:'RUNWAY', payBtn:'Pay everyone',
+      heroNote:'Example numbers, not a live pool. The ticking uses the same accrual math as the contract.',
+      k01:'01 / the problem', problemH2:'Paying a team onchain today means picking a compromise.',
+      problemP:'Streams know about time but not about teams. Splitters know about teams but not about time. Manual transfers know about neither. ArcDrip is the merge: a split that happens <em>over time</em>.',
+      svgMissed:'missed', svgRecreate:'re-weight = cancel ×4, recreate ×4', svgInstant:'instant · no clock · no runway', svgOnePool:'one pool · one rate · shares over time',
+      p1l:'MANUAL TRANSFERS', p1t:'Someone signs every period.', p1d:'Miss one and payroll is late. Amounts live in a spreadsheet. Runway is a guess.',
+      p2l:'ONE STREAM PER PERSON', p2t:'N streams, N balances.', p2d:'Changing one weight means rebuilding every stream. The treasury’s runway is scattered across N deposits.',
+      p3l:'SPLITTER', p3t:'Divides what arrives, at once.', p3d:'Great for revenue, wrong for salaries: there’s no notion of time, so nothing is earned per second.',
+      p4t:'A split that streams.', p4d:'One balance and one runway. Re-weighting is one write. Anyone can press pay, and money always lands at the member’s address.',
+      k02:'02 / how it works', tlH2:'The rate is constant.<br>The slices move.',
+      tlP:'Read it left to right: the pool’s whole rate is the height of the band, and each color is one member’s slice. Every event below is a single transaction.',
+      tlAlt:'Stacked chart of each member’s slice of the stream over time, across four events.',
+      svgTime:'time →', svgFrozen:'FROZEN', svgFrozenM:'FROZEN', svgNoStream:'nothing streams,', svgNoOwe:'nothing is owed', svgA:'A · 3 shares · 42.9%', svgDjoins:'D joins · 1 share', svgRateConst:'rate ↑ constant',
+      e1t:'Someone joins mid-stream', e1d:'Everyone’s slice shrinks from this second. One write; nobody else’s storage is touched.',
+      e2c:'2 · balance hits zero', e2t:'The pool freezes by itself', e2d:'No keeper, no debt. It can never owe more than it holds.',
+      e3t:'Anyone tops it up', e3d:'Streaming resumes from the deposit’s timestamp. Frozen time isn’t back-paid.',
+      e4t:'Someone leaves', e4d:'C stops earning, but everything C already accrued stays withdrawable forever.',
+      k03:'03 / the math', mathH2:'Why one write is enough.',
+      mathP:'The pool keeps a single running number: how much one share has earned since the start. Each member only remembers where that number was when they joined. Their pay is the gap, times their shares.',
+      mathAlt:'The pool’s index rises over time; a member’s pay is the gap between the index now and the index when they joined.',
+      svgIdx:'accIndex · USDC earned per share since start', svgIdxShort:'accIndex · earned per share', svgFrozenLc:'frozen', svgDstores:'D joins → stores index_D', svgNow:'now', svgSlope:'slope = rate ÷ totalShares',
+      kv1:'Join, leave or re-weight settles one member and touches nobody else.', kv2:'Kept in wad internally, so 1 USDC a month never rounds to zero.', kv3:'Every rounding favours the pool, never a member.',
+      specLink:'Full spec and the Solidity →',
+      k04:'04 / guarantees', guarH2:'What’s earned is theirs.',
+      guarP:'An owner can pause, re-weight or cancel the future. Nothing can touch the past. Each rule is a Foundry invariant, checked after every step of randomized runs.',
+      i1k:'I1 · no over-accounting', i1d:'What members can claim never exceeds what streamed.',
+      i2k:'I2 · solvent', i2d:'A pool never owes more than its balance.',
+      i3k:'I3 · backed', i3d:'All pools together are covered by the contract’s USDC.',
+      i4k:'I4 · owner-proof', i4d:'No owner action ever lowers anyone’s claimable.',
+      i5k:'I5 · never over-pays', i5d:'Checked against an exact rational reference model.',
+      skipD:'In “Pay everyone”, a blocked address is skipped and its balance restored. The rest still get paid.',
+      adminK:'0 admin keys', adminD:'One immutable contract. No upgrade, no token, no fees. Pool owners can be an EOA, a Safe or a DAO.',
+      k05:'05 / what’s built', proofH2:'Open source, tested, headed to mainnet.',
+      proofP:'An MIT-licensed building block: the contract, an SDK and the app that drives it. No token, no sale, no yield, no fees.',
+      colPart:'PART', colWhat:'WHAT IT DOES', colTests:'TESTS',
+      part1:'Immutable singleton holding many pools: index accrual, freeze on empty, pull withdrawals, blocklist-safe batch payout, cancel, two-step ownership', part1n:'182 (4 fork skipped)',
+      part2:'viem actions, Zod schemas, the accrual math mirrored offchain, member discovery from logs', part2n:'217',
+      part3:'“Collective Payroll”: create, fund, weight, watch, pay everyone. Static export, EN and PT-BR', part3n:'see repo',
+      part4:'Spec, threat model, measured gas table and the CCTP finding for Arc mainnet',
+      statusLine:'Mainnet deploy in progress',
+      statusP:'Every package builds and its tests pass locally, including the invariant suite. The address and each proof transaction fill in as the deployment lands. Every wallet in the proof run belongs to the author.',
+      addr2:'Deploy, verified on Sourcify', addr3:'Proof pool, first deposit', addr4:'withdrawFor paid by someone else', addr5:'Join, freeze, resume, no back-pay', addr6:'Pay everyone in one transaction', addr7:'Cancel, member withdraws anyway',
+      docSpec:'Spec', docThreats:'Threat model', docGas:'Gas costs', docCctp:'CCTP on Arc', docContract:'Contract', docLicense:'License (MIT)',
+      arc1:'USDC to withdraw. On Arc, gas is paid in USDC.', arc2:'Finality, so the live ticker and the chain agree.', arc3k:'1 asset', arc3:'Treasury, salary and gas are all native USDC.', arc4:'No Sablier, Superfluid or 0xSplits on Arc yet.',
+      ctaH2:'Open the tap.<br><span class="dim">Shares do the rest.</span>',
+      footL:'ArcDrip · MIT · experimental, not externally audited', footR:'No token, no fees, no admin key',
+      title:'ArcDrip: one USDC stream, split by shares',
+      desc:'A shared USDC stream for collectives on Arc: one rate, N shares, live runway. Join, leave or re-weight mid-stream without touching anyone else.',
+      // dynamic
+      names:['maintainer','design','infra','docs'], perMo:'/mo', removed:'removed · accrued stays', out:'out',
+      paid:'paid {x} USDC · 1 tx', payHint:'withdrawForBatch · 1 tx', paused:'paused', left:'{x} USDC left', runway:'runway {x}',
+      addShare:'Add a share to {n}', removeShare:'Remove a share from {n}', sharesOf:'{n} shares'
+    },
+    pt: {
+      skip:'Pular para o problema', navSub:'fluxo de USDC compartilhado · Arc',
+      navProblem:'problema', navHow:'como funciona', navMath:'matemática', navGuar:'garantias', navProof:'provas',
+      kicker:'▍ folha de pagamento coletiva, em fluxo',
+      h1:'Um fluxo.<br><span class="dim">Dividido por cotas,</span><br>a cada segundo.',
+      lead:'O ArcDrip paga um time inteiro a partir de um pool pré-financiado. Entra uma taxa; as cotas decidem quem recebe quanto. Mude a cota de alguém e todos são repesados a partir daquele segundo — nada do que já foi ganho se move.',
+      ctaHow:'Ver como divide', ctaGithub:'Ver no GitHub', ctaSpec:'Ler a especificação',
+      streaming:'EM FLUXO', poolTag:'pool de exemplo · modelo ao vivo, experimente', rateWord:'taxa',
+      svgPool:'POOL', svgUnstreamed:'USDC não distribuídos', svgRunway:'AUTONOMIA', payBtn:'Pagar todos',
+      heroNote:'Números de exemplo, não é um pool real. A contagem usa a mesma matemática de acúmulo do contrato.',
+      k01:'01 / o problema', problemH2:'Pagar um time onchain hoje é escolher uma concessão.',
+      problemP:'Fluxos entendem de tempo, mas não de times. Splitters entendem de times, mas não de tempo. Transferências manuais não entendem de nenhum dos dois. O ArcDrip junta os dois: uma divisão que acontece <em>ao longo do tempo</em>.',
+      svgMissed:'esquecido', svgRecreate:'repesar = cancelar ×4, recriar ×4', svgInstant:'instantâneo · sem relógio · sem autonomia', svgOnePool:'um pool · uma taxa · cotas no tempo',
+      p1l:'TRANSFERÊNCIAS MANUAIS', p1t:'Alguém assina a cada período.', p1d:'Esqueceu uma, a folha atrasa. Os valores vivem numa planilha. A autonomia é um chute.',
+      p2l:'UM FLUXO POR PESSOA', p2t:'N fluxos, N saldos.', p2d:'Mudar um peso significa reconstruir todos os fluxos. A autonomia do tesouro fica espalhada em N depósitos.',
+      p3l:'SPLITTER', p3t:'Divide o que chega, na hora.', p3d:'Ótimo para receita, errado para salário: não existe noção de tempo, então nada é ganho por segundo.',
+      p4t:'Uma divisão que flui.', p4d:'Um saldo e uma autonomia. Repesar é uma escrita. Qualquer pessoa pode pagar, e o dinheiro sempre cai no endereço do membro.',
+      k02:'02 / como funciona', tlH2:'A taxa é constante.<br>As fatias se movem.',
+      tlP:'Leia da esquerda para a direita: a altura da faixa é a taxa total do pool, e cada cor é a fatia de um membro. Cada evento abaixo é uma única transação.',
+      tlAlt:'Gráfico empilhado da fatia de cada membro no fluxo ao longo do tempo, em quatro eventos.',
+      svgTime:'tempo →', svgFrozen:'CONGELADO', svgFrozenM:'CONGEL.', svgNoStream:'nada flui,', svgNoOwe:'nada fica devido', svgA:'A · 3 cotas · 42,9%', svgDjoins:'D entra · 1 cota', svgRateConst:'taxa ↑ constante',
+      e1t:'Alguém entra no meio do fluxo', e1d:'A fatia de todos encolhe a partir deste segundo. Uma escrita; o armazenamento de ninguém mais é tocado.',
+      e2c:'2 · saldo chega a zero', e2t:'O pool congela sozinho', e2d:'Sem keeper, sem dívida. Ele nunca deve mais do que tem.',
+      e3t:'Qualquer um recarrega', e3d:'O fluxo retoma a partir do horário do depósito. O tempo congelado não é pago retroativamente.',
+      e4t:'Alguém sai', e4d:'C para de ganhar, mas tudo o que C já acumulou continua sacável para sempre.',
+      k03:'03 / a matemática', mathH2:'Por que uma escrita basta.',
+      mathP:'O pool guarda um único número corrente: quanto uma cota ganhou desde o início. Cada membro só lembra onde esse número estava quando entrou. O pagamento é a diferença, vezes as cotas.',
+      mathAlt:'O índice do pool sobe com o tempo; o pagamento de um membro é a diferença entre o índice agora e o índice quando ele entrou.',
+      svgIdx:'accIndex · USDC ganho por cota desde o início', svgIdxShort:'accIndex · ganho por cota', svgFrozenLc:'congelado', svgDstores:'D entra → guarda index_D', svgNow:'agora', svgSlope:'inclinação = taxa ÷ totalShares',
+      kv1:'Entrar, sair ou repesar liquida um membro e não toca em mais ninguém.', kv2:'Guardado em wad internamente, então 1 USDC por mês nunca arredonda para zero.', kv3:'Todo arredondamento favorece o pool, nunca um membro.',
+      specLink:'Especificação completa e o Solidity →',
+      k04:'04 / garantias', guarH2:'O que foi ganho é de quem ganhou.',
+      guarP:'O dono pode pausar, repesar ou cancelar o futuro. Nada toca o passado. Cada regra é um invariante do Foundry, checado a cada passo de execuções aleatórias.',
+      i1k:'I1 · sem contabilidade a mais', i1d:'O que os membros podem sacar nunca passa do que fluiu.',
+      i2k:'I2 · solvente', i2d:'Um pool nunca deve mais do que seu saldo.',
+      i3k:'I3 · lastreado', i3d:'Todos os pools juntos são cobertos pelo USDC do contrato.',
+      i4k:'I4 · à prova do dono', i4d:'Nenhuma ação do dono diminui o saldo sacável de ninguém.',
+      i5k:'I5 · nunca paga a mais', i5d:'Checado contra um modelo de referência racional exato.',
+      skipD:'No “Pagar todos”, um endereço bloqueado é pulado e seu saldo restaurado. Os demais recebem mesmo assim.',
+      adminK:'0 chaves admin', adminD:'Um contrato imutável. Sem upgrade, sem token, sem taxas. O dono de um pool pode ser uma EOA, uma Safe ou uma DAO.',
+      k05:'05 / o que foi construído', proofH2:'Código aberto, testado, a caminho da mainnet.',
+      proofP:'Um bloco de construção com licença MIT: o contrato, um SDK e o app que usa os dois. Sem token, sem venda, sem rendimento, sem taxas.',
+      colPart:'PARTE', colWhat:'O QUE FAZ', colTests:'TESTES',
+      part1:'Singleton imutável com muitos pools: acúmulo por índice, congela ao esvaziar, saques por pull, pagamento em lote seguro contra blocklist, cancelamento, transferência de dono em duas etapas', part1n:'182 (4 fork pulados)',
+      part2:'Ações viem, schemas Zod, a matemática de acúmulo espelhada offchain, descoberta de membros pelos logs', part2n:'217',
+      part3:'“Collective Payroll”: criar, financiar, pesar, acompanhar, pagar todos. Export estático, EN e PT-BR', part3n:'ver repo',
+      part4:'Especificação, modelo de ameaças, tabela de gas medida e a descoberta sobre CCTP na mainnet da Arc',
+      statusLine:'Deploy na mainnet em andamento',
+      statusP:'Todos os pacotes compilam e os testes passam localmente, incluindo a suíte de invariantes. O endereço e cada transação de prova entram aqui quando o deploy acontecer. Todas as carteiras da prova pertencem ao autor.',
+      addr2:'Deploy, verificado no Sourcify', addr3:'Pool de prova, primeiro depósito', addr4:'withdrawFor pago por outra pessoa', addr5:'Entrar, congelar, retomar sem retroativo', addr6:'Pagar todos em uma transação', addr7:'Cancelar, membro saca mesmo assim',
+      docSpec:'Especificação', docThreats:'Modelo de ameaças', docGas:'Custos de gas', docCctp:'CCTP na Arc', docContract:'Contrato', docLicense:'Licença (MIT)',
+      arc1:'USDC para sacar. Na Arc, o gas é pago em USDC.', arc2:'De finalidade: o contador ao vivo e a chain concordam.', arc3k:'1 ativo', arc3:'Tesouro, salário e gas são todos USDC nativo.', arc4:'Ainda não há Sablier, Superfluid ou 0xSplits na Arc.',
+      ctaH2:'Abra a torneira.<br><span class="dim">As cotas fazem o resto.</span>',
+      footL:'ArcDrip · MIT · experimental, sem auditoria externa', footR:'Sem token, sem taxas, sem chave admin',
+      title:'ArcDrip: um fluxo de USDC, dividido por cotas',
+      desc:'Um fluxo de USDC compartilhado para coletivos na Arc: uma taxa, N cotas, autonomia ao vivo. Entre, saia ou repese no meio do fluxo sem tocar em mais ninguém.',
+      names:['mantenedor','design','infra','docs'], perMo:'/mês', removed:'removido · acumulado fica', out:'fora',
+      paid:'pago {x} USDC · 1 tx', payHint:'withdrawForBatch · 1 tx', paused:'pausado', left:'{x} USDC restantes', runway:'autonomia {x}',
+      addShare:'Adicionar uma cota para {n}', removeShare:'Remover uma cota de {n}', sharesOf:'{n} cotas'
+    }
+  };
+
+  let lang = 'en';
+  const L = () => I18N[lang];
+  const fill = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k]);
+  const fmt = (n, d) => new Intl.NumberFormat(lang === 'pt' ? 'pt-BR' : 'en-US', { minimumFractionDigits: d, maximumFractionDigits: d }).format(n);
+
+  /* ---------- live split model (illustrative; same accrual shape as DripPool) ---------- */
+  const MONTH = 2592000;
+  const RATES = [1000, 3000, 10000];
+  const COLORS = ['#7FE0B8', '#4FB892', '#7DB4FF', '#F2C46D'];
+  const ADDRS = ['0x7a3f…c91e', '0x19bd…04a2', '0xe0c4…7b33', '0x55a1…d0f8'];
+  const BALANCE = 3376.29;
+  const st = { rateIdx: 1, shares: [3, 2, 2, 1], acc: [412.118302, 281.540117, 268.902554, 97.330981], tLast: 0, U0: 2316.4, lastPaid: null };
+  const t0 = Date.now();
+  const nowS = () => Math.floor((Date.now() - t0) / 1000);
+  const rate = () => RATES[st.rateIdx] / MONTH;
+  const total = () => st.shares.reduce((a, b) => a + b, 0);
+  function snapshot() {
+    const t = nowS(), dt = t - st.tLast, T = total(), r = rate();
+    const U = Math.max(0, st.U0 - (T ? r * dt : 0));
+    return { t, U, claims: st.acc.map((a, i) => a + (T ? r * st.shares[i] / T * dt : 0)) };
+  }
+  function settle() { const s = snapshot(); st.acc = s.claims; st.tLast = s.t; st.U0 = s.U; }
+
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const G = {
+    d: { H: 200, sx: 332, ex: 810, center: 220, slot: (i) => 70 + i * 100 },
+    m: { H: 110, sx: 122, ex: 300, center: 115, slot: (i) => 38 + i * 51 }
+  };
+  function bandsSVG(g, flowGap) {
+    const T = total(); let sy = g.center - g.H / 2; const mx = (g.sx + g.ex) / 2; let out = '';
+    st.shares.forEach((s, i) => {
+      if (!T || !s) return;
+      const h = g.H * s / T, yc = g.slot(i), dy = yc - h / 2, c = sy + h / 2;
+      const top = `M${g.sx} ${sy} C ${mx} ${sy}, ${mx} ${dy}, ${g.ex} ${dy}`;
+      out += `<path d="${top} L ${g.ex} ${dy + h} C ${mx} ${dy + h}, ${mx} ${sy + h}, ${g.sx} ${sy + h} Z" fill="${COLORS[i]}" opacity=".22"/>` +
+             `<path d="${top}" stroke="${COLORS[i]}" stroke-opacity=".7"/>` +
+             `<path class="flow" d="M${g.sx} ${c} C ${mx} ${c}, ${mx} ${yc}, ${g.ex} ${yc}" stroke="${COLORS[i]}" stroke-width="${flowGap}"/>`;
+      sy += h;
+    });
+    return out;
+  }
+  const $ = (id) => document.getElementById(id);
+  function buildStatic() {
+    // desktop member terminals
+    let d = '', m = '';
+    for (let i = 0; i < 4; i++) {
+      const yc = G.d.slot(i);
+      d += `<rect x="820" y="${yc - 28}" width="4" height="56" rx="2" fill="${COLORS[i]}" id="d-bar-${i}"/>` +
+           `<text x="842" y="${yc - 8}" fill="#9AA3AE" style="font:400 13px var(--mono)" id="d-name-${i}"></text>` +
+           `<text x="842" y="${yc + 24}" fill="#F2F4F6" style="font:300 30px var(--mono);letter-spacing:-.02em" id="d-claim-${i}"></text>` +
+           `<text x="1238" y="${yc - 8}" text-anchor="end" fill="${COLORS[i]}" style="font:500 13px var(--mono)" id="d-pct-${i}"></text>` +
+           `<text x="1238" y="${yc + 24}" text-anchor="end" fill="#7C8591" style="font:400 12px var(--mono)" id="d-mo-${i}"></text>`;
+      m += `<text x="342" y="${G.m.slot(i) + 4}" text-anchor="end" fill="${COLORS[i]}" style="font:500 11px var(--mono)" id="m-pct-${i}"></text>`;
+    }
+    $('d-members').innerHTML = d;
+    $('m-members').innerHTML = m;
+    // control rows
+    const rows = $('rows'); rows.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `<div class="bar" style="background:${COLORS[i]}" id="r-bar-${i}"></div>` +
+        `<div class="info"><span class="nm" id="r-nm-${i}"></span><span class="sub fn">setShares()</span><span class="claim" id="r-claim-${i}"></span></div>` +
+        `<div class="step"><button type="button" id="r-dec-${i}">−</button><output id="r-sh-${i}" style="color:${COLORS[i]}"></output><button type="button" id="r-inc-${i}">+</button></div>`;
+      rows.appendChild(row);
+      $(`r-dec-${i}`).addEventListener('click', () => setShare(i, st.shares[i] - 1));
+      $(`r-inc-${i}`).addEventListener('click', () => setShare(i, st.shares[i] + 1));
+    }
+  }
+  function renderStructure() {
+    $('d-bands').innerHTML = bandsSVG(G.d, 2);
+    $('m-bands').innerHTML = bandsSVG(G.m, 1.5);
+    document.querySelectorAll('[data-rate]').forEach((b) => {
+      const i = +b.dataset.rate;
+      b.textContent = fmt(RATES[i], 0) + L().perMo;
+      b.setAttribute('aria-pressed', String(i === st.rateIdx));
+    });
+    const T = total(), names = L().names;
+    for (let i = 0; i < 4; i++) {
+      const s = st.shares[i], off = s === 0;
+      const pct = off ? L().removed : fmt(s / T * 100, 1) + '%';
+      $(`d-name-${i}`).textContent = `${ADDRS[i]} · ${names[i]}`;
+      $(`d-pct-${i}`).textContent = pct;
+      $(`d-mo-${i}`).textContent = off ? '0 ' + L().perMo : fmt(RATES[st.rateIdx] * s / T, 2) + ' ' + L().perMo;
+      $(`d-bar-${i}`).setAttribute('opacity', off ? '.45' : '1');
+      $(`d-claim-${i}`).setAttribute('opacity', off ? '.45' : '1');
+      $(`m-pct-${i}`).textContent = off ? L().out : Math.round(s / T * 100) + '%';
+      $(`r-nm-${i}`).textContent = window.matchMedia('(max-width:760px)').matches ? `${names[i]} · ${pct}` : names[i];
+      $(`r-sh-${i}`).textContent = s;
+      $(`r-sh-${i}`).setAttribute('aria-label', fill(L().sharesOf, { n: s }));
+      $(`r-dec-${i}`).setAttribute('aria-label', fill(L().removeShare, { n: names[i] }));
+      $(`r-inc-${i}`).setAttribute('aria-label', fill(L().addShare, { n: names[i] }));
+      $(`r-bar-${i}`).style.opacity = off ? '.45' : '1';
+      $(`r-claim-${i}`).style.opacity = off ? '.45' : '1';
+    }
+    $('d-persec').textContent = fmt(rate(), 6);
+    $('pay-line').textContent = st.lastPaid == null ? L().payHint : fill(L().paid, { x: fmt(st.lastPaid, 2) });
+    tick();
+  }
+  function tick() {
+    const s = snapshot(), T = total(), r = rate();
+    let rw = L().paused;
+    if (T && r) {
+      const left = Math.floor(s.U / r), p = (n) => String(n).padStart(2, '0');
+      rw = `${Math.floor(left / 86400)}d ${p(Math.floor(left % 86400 / 3600))}:${p(Math.floor(left % 3600 / 60))}:${p(left % 60)}`;
+    }
+    const f = Math.min(1, s.U / BALANCE);
+    const dh = 359 * f, dy = 41 + 359 - dh, mh = 189 * f, my = 21 + 189 - mh;
+    $('d-tank').setAttribute('y', dy); $('d-tank').setAttribute('height', dh); $('d-tank-line').setAttribute('d', `M41 ${dy}H210`);
+    $('m-tank').setAttribute('y', my); $('m-tank').setAttribute('height', mh); $('m-tank-line').setAttribute('d', `M11 ${my}H72`);
+    $('d-unstreamed').textContent = fmt(s.U, 2);
+    $('d-runway').textContent = rw;
+    $('m-left').textContent = fill(L().left, { x: fmt(s.U, 2) });
+    $('m-runway').textContent = fill(L().runway, { x: rw });
+    for (let i = 0; i < 4; i++) {
+      const c = fmt(s.claims[i], 6);
+      $(`d-claim-${i}`).textContent = c;
+      $(`r-claim-${i}`).textContent = c;
+    }
+  }
+  function setShare(i, v) {
+    settle();
+    st.shares[i] = Math.max(0, Math.min(9, v));
+    renderStructure();
+  }
+  document.querySelectorAll('[data-rate]').forEach((b) => b.addEventListener('click', () => { settle(); st.rateIdx = +b.dataset.rate; renderStructure(); }));
+  $('pay').addEventListener('click', () => {
+    const s = snapshot();
+    st.lastPaid = s.claims.reduce((a, b) => a + b, 0);
+    st.acc = [0, 0, 0, 0]; st.tLast = s.t; st.U0 = s.U;
+    renderStructure();
+  });
+  window.matchMedia('(max-width:760px)').addEventListener('change', renderStructure);
+
+  /* ---------- i18n (same contract as the previous page) ---------- */
+  const buttons = { en: $('lang-en'), pt: $('lang-pt') };
+  function apply(next) {
+    lang = I18N[next] ? next : 'en';
+    const dict = L();
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      if (typeof dict[key] === 'string') el.innerHTML = dict[key];
+    });
+    $('html-root').setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
+    $('doc-title').textContent = dict.title;
+    $('doc-desc').setAttribute('content', dict.desc);
+    buttons.en.setAttribute('aria-pressed', String(lang === 'en'));
+    buttons.pt.setAttribute('aria-pressed', String(lang === 'pt'));
+    renderStructure();
+  }
+  function readStoredLang() {
+    try { const v = localStorage.getItem(STORAGE_KEY); return v === 'pt' || v === 'en' ? v : null; } catch { return null; }
+  }
+  function storeLang(v) {
+    try { localStorage.setItem(STORAGE_KEY, v); } catch { /* private mode or blocked storage: language still applies for this view */ }
+  }
+  buttons.en.addEventListener('click', () => { apply('en'); storeLang('en'); });
+  buttons.pt.addEventListener('click', () => { apply('pt'); storeLang('pt'); });
+
+  buildStatic();
+  apply(readStoredLang() || 'en');
+  setInterval(tick, 1000);
+})();
+</script>
 </body>
 </html>
