@@ -38,6 +38,14 @@
     "pool1.withdraw": "0x5fce2ef1183527c979be15c65fc534cacd5c843c4f678ee6ede4c7e93ed1082d",
     "pool1.withdrawFor": "0x2930f93a24bd2cf1ee4fa95dbc5cc870c6987abcf9f54a939bdfde5a270853af",
     "pool1.setSharesJoin": "0x3b6d2b9740f1fa1fa1054d88099ae849502cf6c4eadb1e88be323bef1a4eb3f6",
-    "pool1.setPayoutAddress": "0x6e469441377aa6e126caaee64a9683041cdc7248e60b1ac67b28abe3d3e60072"
+    "pool1.setPayoutAddress": "0x6e469441377aa6e126caaee64a9683041cdc7248e60b1ac67b28abe3d3e60072",
+    "pool1.approveResume": "0x6246a104422930c41a3be80497b585352fec1e9d2c4b1af461c0af68bea20d8b",
+    "pool1.depositResume": "0x7b40de20ade6bfdda4130b4366164319ae9c6376270a3a2ac7fc43193ffe36e3",
+    "pool1.withdrawForBatch": "0xeac343b8bd5670de058062686fb7aed693f87c50dec563a476e5793e82c6d107",
+    "pool1.leave": "0x8b261783b3e40d5af5c79e0c03a22a6d2e151a74f3653147ca640affddf74caf",
+    "pool1.withdrawForAfterLeave": "0xf2ba7f392365fda143d5fedb2c3b2631881f2f4062782893aa44667b3c3f5add",
+    "pool1.pause": "0xf7f3544353c436f9cc42c72f132480541c0dc0318f5e6682cbbf5865ff1ab08d",
+    "pool1.resumeRate": "0x3fe0393ef6e79cb5da7cabeb519ee2ee827da39e14de4644f8a8c51d1dcef8d3",
+    "pool1.withdrawUnstreamed": "0x8db28d096871639a6c287aea7e39e08281c2f7af3cef059d087f97d3f5fce8b8"
   }
 }

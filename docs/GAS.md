@@ -27,11 +27,11 @@
 | Call | Target | Execution gas | Tx model | USDC at 20 gwei | vs target | Arc mainnet gasUsed |
 |---|---:|---:|---:|---:|---|---:|
 | `createPool` | ≤ 130,000 | 55,666 | 77,990 | 0.00156 | within (−52,010) | 78,014 |
-| `deposit`, running pool | ≤ 95,000 | 78,969 | 97,537 | 0.00195 | **over** (+2,537) | in progress (proof row 5); a first deposit into an unfunded pool measured 94,420 |
+| `deposit`, running pool | ≤ 95,000 | 78,969 | 97,537 | 0.00195 | **over** (+2,537) | 83,575 (proof row 5, resume into the frozen pool 1); a first deposit into an unfunded pool measured 94,420 |
 | `setShares`, new member, running pool | ≤ 110,000 | 94,100 | 115,812 | 0.00232 | **over** (+5,812) | 98,712 |
 | `withdraw`, repeat | ≤ 95,000 | 108,763 | 107,267 | 0.00215 | **over** (+12,267) | in progress; the pool's first `withdraw` measured 166,744 (see below) |
-| `withdrawFor`, repeat | ≤ 95,000 | 108,894 | 107,562 | 0.00215 | **over** (+12,562) | in progress; a member's first `withdrawFor` measured 137,543 |
-| `withdrawForBatch`, 4 members, per member | ≤ 60,000 | 63,385 | 55,133 | 0.00110 | within (−4,867) | in progress (proof row 6) |
+| `withdrawFor`, repeat | ≤ 95,000 | 108,894 | 107,562 | 0.00215 | **over** (+12,562) | 102,947 (proof row 7, OPS pays B after B left); a member's first `withdrawFor` measured 137,543 |
+| `withdrawForBatch`, 4 members, per member | ≤ 60,000 | 63,385 | 55,133 | 0.00110 | within (−4,867) | 71,760 (proof row 6: 287,038 for the whole batch, the pool's first; see below) |
 | `withdrawForBatch`, 10 members, per member | ≤ 60,000 | 54,053 | 45,091 | 0.00090 | within (−14,909) | not run (the proof batch has 4 members) |
 | `withdrawForBatch`, 100 members, per member | ≤ 60,000 | 48,454 | 39,066 | 0.00078 | within (−20,933) | not run (the proof batch has 4 members) |
 
@@ -46,7 +46,7 @@ times. That is also the path the reference app's "Pay everyone" button uses (PRD
 ## Arc mainnet receipts
 
 Every proof transaction so far, `gasUsed` from `cast receipt <hash> --rpc-url https://rpc.mainnet.arc.io`
-(2026-09-18, effective gas price 20.0–20.7 gwei; hashes in `deployments/arc-mainnet.json` `proofTxs`).
+(2026-09-18 and 2026-09-19, effective gas price 20.0–21.0 gwei; hashes in `deployments/arc-mainnet.json` `proofTxs`).
 
 | Call | gasUsed | ≈ USDC | Context |
 |---|---:|---:|---|
@@ -62,10 +62,23 @@ Every proof transaction so far, `gasUsed` from `cast receipt <hash> --rpc-url ht
 | `setPayoutAddress` | 48,378 | 0.0010 | pool 1 (B) |
 | `cancel` | 85,321 | 0.0017 | pool 2 |
 | `withdraw` after `cancel` | 94,491 | 0.0019 | pool 2 (C) |
+| `deposit`, running pool (resume after the freeze) | 83,575 | 0.0017 | pool 1, row 5 |
+| `withdrawForBatch`, 4 members | 287,038 (71,760 per member) | 0.0057 | pool 1, row 6, sent by C; the pool's first batch |
+| `setShares` remove (to 0) | 65,030 | 0.0013 | pool 1, row 7, B leaves |
+| `withdrawFor`, repeat | 102,947 | 0.0021 | pool 1, row 7, OPS pays B after B left |
+| `setRate(0)` (pause) | 49,276 | 0.0010 | pool 1, row 8 |
+| `setRate` (resume) | 42,695 | 0.0009 | pool 1, row 8 |
+| `withdrawUnstreamed` | 83,374 | 0.0017 | pool 1, row 8, 0.5 USDC |
 
 The first `withdraw` in a pool initialises `accIndex`, `owed` and the member's `index`/`pending` (the "First-time
 calls" table below: 141,467 locally); on Arc it lands about 25k higher. The likely cause is the USDC proxy over
-the native-coin precompile, but the exact split is not measured. Steady-state rows fill in with proof rows 5–8.
+the native-coin precompile, but the exact split is not measured. The steady-state rows from proof rows 5–8 land
+*below* the tx model: `deposit` 83,575 (model 97,537, so within the 95,000 target on mainnet) and a repeat
+`withdrawFor` 102,947 (model 107,562). The 4-member batch is the exception at 71,760 per member (model 55,133,
+target 60,000). It was pool 1's first batch and, as far as the proof sequence shows, carried one-off costs:
+member `main` had not been settled since joining before the first deposit, so its `index` was written from zero
+there, and it was the first payment to B's new payout address (row 4). The split is not measured; a second
+batch on the same pool would give the steady-state number.
 
 ## First-time calls
 

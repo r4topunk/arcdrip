@@ -12,8 +12,8 @@ math so a UI ticks per second without RPC calls, and a static reference app, "Co
 
 > **Status:** **live on Arc mainnet** since 2026-09-18. `DripPool` is deployed at
 > [`0x92b8fdB2c457b64d4510aC980A84283356D8A44f`](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f)
-> and verified on Sourcify (exact match). Proof rows 1–4 and 9 are recorded below; rows 5–8 land when proof pool 1
-> runs dry (about 8 h after its first deposit) and row 10 after three days of streaming. **Unaudited and
+> and verified on Sourcify (exact match). Proof rows 1–9 are recorded below; row 10 lands after three days of
+> streaming (from 2026-09-21 ≈ 19:00 UTC). **Unaudited and
 > experimental**: keep amounts small.
 
 > **Name:** the project was called ArcDrip until 2026-09-18 and was renamed to avoid a clash with an unrelated
@@ -192,10 +192,11 @@ proof run fills it in.
 | Call | PRD target | tx gas | ≈ USDC | vs target | Arc mainnet |
 |---|---:|---:|---:|---|---:|
 | `createPool` | ≤ 130,000 | 77,990 | 0.00156 | within | 78,014 |
-| `deposit`, running pool | ≤ 95,000 | 97,537 | 0.00195 | **over by 2,537** | in progress (row 5); first deposit 94,420 |
+| `deposit`, running pool | ≤ 95,000 | 97,537 | 0.00195 | **over by 2,537** | 83,575 (row 5, resume); first deposit 94,420 |
 | `setShares`, new member | ≤ 110,000 | 115,812 | 0.00232 | **over by 5,812** | 98,712 |
 | `withdraw` | ≤ 95,000 | 107,267 | 0.00215 | **over by 12,267** | 166,744 (first in the pool) |
-| `withdrawFor` | ≤ 95,000 | 107,562 | 0.00215 | **over by 12,562** | 137,543 (member's first) |
+| `withdrawFor` | ≤ 95,000 | 107,562 | 0.00215 | **over by 12,562** | 102,947 repeat (row 7); 137,543 member's first |
+| `withdrawForBatch`, 4 members, per member | ≤ 60,000 | 55,133 | 0.00110 | within | 71,760 (row 6, first batch; 287,038 total) |
 | `withdrawForBatch`, 10 members, per member | ≤ 60,000 | 45,091 | 0.00090 | within | not run (proof batch has 4) |
 | `withdrawForBatch`, 100 members, per member | ≤ 60,000 | 39,066 | 0.00078 | within | not run (proof batch has 4) |
 
@@ -238,9 +239,11 @@ accrual vectors, **74** web tests and **36** script tests — 518 in total.
 ## Mainnet proof
 
 Every hash below was re-checked with `cast receipt` (status 1). The same hashes are in
-[`deployments/arc-mainnet.json`](deployments/arc-mainnet.json) `proofTxs` and on the project page. Rows 5–8 run
-when proof pool 1 runs dry (it was funded with 1 USDC at 3 USDC/day on 2026-09-18 18:54 UTC, so it freezes at
-2026-09-19 02:54 UTC); row 10 needs three days of streaming. Amounts are reduced from the original plan (resume
+[`deployments/arc-mainnet.json`](deployments/arc-mainnet.json) `proofTxs` and on the project page. Rows 5–8 ran
+on 2026-09-19 03:00–03:04 UTC, after proof pool 1 ran dry: `claimable(main)` read 206,369 units at 03:00:11 and
+again at 03:01:13 UTC with 0 unstreamed, so the freeze in row 5 is two read-only calls 60 s apart, not a
+transaction; after the resume deposit it read 206,390 (streaming again from the deposit, no back-pay for the
+frozen interval). Row 10 needs three days of streaming (runnable after 2026-09-21 ≈ 19:00 UTC). Amounts are reduced from the original plan (resume
 deposit 1 USDC instead of 5, sweep 0.5 USDC instead of 1, pool 2 deposit 0.2 USDC instead of 1) to fit the
 wallet's balance. Pool 2 also has one extra member `withdraw` sent *before* the cancel
 ([`0x8d9bfc93…`](https://explorer.arc.io/tx/0x8d9bfc93a196c139babeb37c24a6b1eb862897daf7f372472b4b51b3cabc0d2e),
@@ -252,10 +255,10 @@ an operator ordering slip); the cancel and the post-cancel `withdraw` in row 9 a
 | 2 | Create proof pool 1 "r4to collective": 3 USDC/day, shares 1 / 1 / 2; deposit 1 USDC (8 h of runway) | [createPool `0xc46ded99…`](https://explorer.arc.io/tx/0xc46ded991975902399f5592699d769428262a8b85641762f04e6180a56741e17) · [setSharesBatch `0x445a5431…`](https://explorer.arc.io/tx/0x445a5431f608871356fa3e084941523006d9fd8928a812f08c0c8dc2b3a2dafa) · [approve `0x412ecbea…`](https://explorer.arc.io/tx/0x412ecbea1cab2449cf92521ad0741c58f4f235bb68e3d7faaafa6b3956916296) · [deposit `0xdcd8771e…`](https://explorer.arc.io/tx/0xdcd8771e113fc6606a361cbe66211c3da1ef7c11c0de4aaada12368d6cdd8f77) |
 | 3 | `withdraw` by a member, and `withdrawFor` for another member paid by a third wallet | [withdraw (C) `0x5fce2ef1…`](https://explorer.arc.io/tx/0x5fce2ef1183527c979be15c65fc534cacd5c843c4f678ee6ede4c7e93ed1082d) · [withdrawFor(B) sent by OPS `0x2930f93a…`](https://explorer.arc.io/tx/0x2930f93a24bd2cf1ee4fa95dbc5cc870c6987abcf9f54a939bdfde5a270853af) |
 | 4 | `setShares` mid-stream (a fourth member joins) and `setPayoutAddress` to a fresh address | [setShares(OPS, 1) `0x3b6d2b97…`](https://explorer.arc.io/tx/0x3b6d2b9740f1fa1fa1054d88099ae849502cf6c4eadb1e88be323bef1a4eb3f6) · [setPayoutAddress (B) `0x6e469441…`](https://explorer.arc.io/tx/0x6e469441377aa6e126caaee64a9683041cdc7248e60b1ac67b28abe3d3e60072) |
-| 5 | Pool runs dry and freezes (`claimable` stops growing); deposit 1 USDC resumes it with no back-pay | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
-| 6 | `withdrawForBatch` over all four members in one transaction, sent by one member (C) for everyone | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
-| 7 | `setShares(member, 0)` (leave), then `withdrawFor` still pays that member the accrued amount | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
-| 8 | `setRate(0)` (pause), `setRate` back, then `withdrawUnstreamed` of 0.5 USDC | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
+| 5 | Pool runs dry and freezes (`claimable` stops growing); deposit 1 USDC resumes it with no back-pay | freeze: `claimable(main)` flat at 206,369 on 2026-09-19 from 03:00:11 to 03:01:13 UTC, unstreamed 0 · [approve `0x6246a104…`](https://explorer.arc.io/tx/0x6246a104422930c41a3be80497b585352fec1e9d2c4b1af461c0af68bea20d8b) · [deposit `0x7b40de20…`](https://explorer.arc.io/tx/0x7b40de20ade6bfdda4130b4366164319ae9c6376270a3a2ac7fc43193ffe36e3) |
+| 6 | `withdrawForBatch` over all four members in one transaction, sent by one member (C) for everyone | [withdrawForBatch (C) `0xeac343b8…`](https://explorer.arc.io/tx/0xeac343b8bd5670de058062686fb7aed693f87c50dec563a476e5793e82c6d107) |
+| 7 | `setShares(member, 0)` (leave), then `withdrawFor` still pays that member the accrued amount | [setShares(B, 0) `0x8b261783…`](https://explorer.arc.io/tx/0x8b261783b3e40d5af5c79e0c03a22a6d2e151a74f3653147ca640affddf74caf) · [withdrawFor(B) sent by OPS `0xf2ba7f39…`](https://explorer.arc.io/tx/0xf2ba7f392365fda143d5fedb2c3b2631881f2f4062782893aa44667b3c3f5add) |
+| 8 | `setRate(0)` (pause), `setRate` back, then `withdrawUnstreamed` of 0.5 USDC | [setRate(0) `0xf7f35443…`](https://explorer.arc.io/tx/0xf7f3544353c436f9cc42c72f132480541c0dc0318f5e6682cbbf5865ff1ab08d) · [setRate back `0x3fe0393e…`](https://explorer.arc.io/tx/0x3fe0393ef6e79cb5da7cabeb519ee2ee827da39e14de4644f8a8c51d1dcef8d3) · [withdrawUnstreamed 0.5 USDC `0x8db28d09…`](https://explorer.arc.io/tx/0x8db28d096871639a6c287aea7e39e08281c2f7af3cef059d087f97d3f5fce8b8) |
 | 9 | Proof pool 2: create, deposit 0.2 USDC, `cancel`, and the member withdraws **after** the cancel | [createPool `0xc0bc79e3…`](https://explorer.arc.io/tx/0xc0bc79e37451b8407a85a0588eb7a9cb4cb336f72a2e2bbaa9d10b1053d5224d) · [setShares(C, 1) `0x855f0d39…`](https://explorer.arc.io/tx/0x855f0d39ee98527ad61afa169df01900562fc5005bb9b89e9b528ebd24ba7b93) · [approve `0xbc59ad32…`](https://explorer.arc.io/tx/0xbc59ad3299a0f7d7744dd13cd96b7cf7f730485c73e47c64be0c06c1d4d84599) · [deposit `0x53f20456…`](https://explorer.arc.io/tx/0x53f2045644a09be8b8dadcabbbf0a4f0527cc96730aee743a44475928ad1d365) · [cancel `0x3fa2cf07…`](https://explorer.arc.io/tx/0x3fa2cf078949abee422a5c95ab405875b21b6eaacdae3b9f050490430f6d6cd6) · [withdraw after cancel (C) `0x1b0c57b5…`](https://explorer.arc.io/tx/0x1b0c57b5857f80972bf9790c186c1ce82cfae999b0e1721ba147fa125c454457) |
 | 10 | After ≥ 3 days streaming: `Σ withdrawn + Σ claimable + dust == streamed`, reconciled with the SDK | in progress — pool 1 is live at [0x92b8…A44f](https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f) ([app](https://r4topunk.github.io/sharedarc/app/pool/?id=1)) |
 

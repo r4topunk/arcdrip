@@ -3,8 +3,8 @@
 Paste-ready fields for https://dorahacks.io/hackathon/arc-microgrants. Deadline: **2026-10-14 23:59 ET**.
 The form keeps no draft (fill every field in one sitting) and its dropdowns linger from a previous attempt
 (re-check each one before submitting) — see [CHECKLIST.md](CHECKLIST.md).
-Filled from the repo and from mainnet receipts as of 2026-09-18. Proof rows that cannot exist yet (5–8 need proof
-pool 1 to run dry, row 10 needs three days of streaming) read "in progress" with the pool's explorer link;
+Filled from the repo and from mainnet receipts as of 2026-09-19. The proof row that cannot exist yet (row 10
+needs three days of streaming) reads "in progress" with the pool's explorer link;
 **never fill one with a guess.**
 
 ## Name
@@ -146,7 +146,7 @@ and no upgrade path: nothing is held back after deploy.
 ## Mainnet proof transactions
 
 Same data as `deployments/arc-mainnet.json` `proofTxs` and the README's Mainnet proof table. Every hash has
-receipt status 1. Rows 5–8 run when proof pool 1 runs dry (2026-09-19 ≈ 02:54 UTC) and row 10 after three days.
+receipt status 1. Row 10 is still in progress: it runs after three days of streaming (after 2026-09-21 ≈ 19:00 UTC).
 
 | # | Proof | Tx |
 |---|---|---|
@@ -154,10 +154,10 @@ receipt status 1. Rows 5–8 run when proof pool 1 runs dry (2026-09-19 ≈ 02:5
 | 2 | Proof pool 1 "r4to collective": 3 USDC/day, shares 1 / 1 / 2, deposit 1 USDC (8 h of runway) | createPool: https://explorer.arc.io/tx/0xc46ded991975902399f5592699d769428262a8b85641762f04e6180a56741e17 · setSharesBatch: https://explorer.arc.io/tx/0x445a5431f608871356fa3e084941523006d9fd8928a812f08c0c8dc2b3a2dafa · approve: https://explorer.arc.io/tx/0x412ecbea1cab2449cf92521ad0741c58f4f235bb68e3d7faaafa6b3956916296 · deposit: https://explorer.arc.io/tx/0xdcd8771e113fc6606a361cbe66211c3da1ef7c11c0de4aaada12368d6cdd8f77 |
 | 3 | `withdraw` by a member, and `withdrawFor` for another member paid by a third wallet | withdraw (C): https://explorer.arc.io/tx/0x5fce2ef1183527c979be15c65fc534cacd5c843c4f678ee6ede4c7e93ed1082d · withdrawFor(B) sent by OPS: https://explorer.arc.io/tx/0x2930f93a24bd2cf1ee4fa95dbc5cc870c6987abcf9f54a939bdfde5a270853af |
 | 4 | `setShares` mid-stream (a fourth member joins) and `setPayoutAddress` to a fresh address | setShares(OPS, 1): https://explorer.arc.io/tx/0x3b6d2b9740f1fa1fa1054d88099ae849502cf6c4eadb1e88be323bef1a4eb3f6 · setPayoutAddress (B): https://explorer.arc.io/tx/0x6e469441377aa6e126caaee64a9683041cdc7248e60b1ac67b28abe3d3e60072 |
-| 5 | The pool runs dry and freezes (`claimable` stops growing); a 1 USDC deposit resumes it with no back-pay | in progress — pool 1 is live: https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f · https://r4topunk.github.io/sharedarc/app/pool/?id=1 |
-| 6 | `withdrawForBatch` over all four members in one transaction, sent by one member (C) for everyone | in progress — pool 1 is live: https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f · https://r4topunk.github.io/sharedarc/app/pool/?id=1 |
-| 7 | `setShares(member, 0)` (leave), then `withdrawFor` still pays that member the accrued amount | in progress — pool 1 is live: https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f · https://r4topunk.github.io/sharedarc/app/pool/?id=1 |
-| 8 | `setRate(0)` (pause), `setRate` back, then `withdrawUnstreamed` of 0.5 USDC | in progress — pool 1 is live: https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f · https://r4topunk.github.io/sharedarc/app/pool/?id=1 |
+| 5 | The pool runs dry and freezes (`claimable` stops growing); a 1 USDC deposit resumes it with no back-pay | freeze evidence (read-only): claimable(main) flat at 206,369 units on 2026-09-19 from 03:00:11 to 03:01:13 UTC (60 s), unstreamed 0 · approve: https://explorer.arc.io/tx/0x6246a104422930c41a3be80497b585352fec1e9d2c4b1af461c0af68bea20d8b · deposit: https://explorer.arc.io/tx/0x7b40de20ade6bfdda4130b4366164319ae9c6376270a3a2ac7fc43193ffe36e3 |
+| 6 | `withdrawForBatch` over all four members in one transaction, sent by one member (C) for everyone | withdrawForBatch (C): https://explorer.arc.io/tx/0xeac343b8bd5670de058062686fb7aed693f87c50dec563a476e5793e82c6d107 |
+| 7 | `setShares(member, 0)` (leave), then `withdrawFor` still pays that member the accrued amount | setShares(B, 0): https://explorer.arc.io/tx/0x8b261783b3e40d5af5c79e0c03a22a6d2e151a74f3653147ca640affddf74caf · withdrawFor(B) sent by OPS: https://explorer.arc.io/tx/0xf2ba7f392365fda143d5fedb2c3b2631881f2f4062782893aa44667b3c3f5add |
+| 8 | `setRate(0)` (pause), `setRate` back, then `withdrawUnstreamed` of 0.5 USDC | setRate(0): https://explorer.arc.io/tx/0xf7f3544353c436f9cc42c72f132480541c0dc0318f5e6682cbbf5865ff1ab08d · setRate back: https://explorer.arc.io/tx/0x3fe0393ef6e79cb5da7cabeb519ee2ee827da39e14de4644f8a8c51d1dcef8d3 · withdrawUnstreamed 0.5 USDC: https://explorer.arc.io/tx/0x8db28d096871639a6c287aea7e39e08281c2f7af3cef059d087f97d3f5fce8b8 |
 | 9 | Proof pool 2: create, deposit 0.2 USDC, `cancel`, and the member withdraws **after** the cancel | createPool: https://explorer.arc.io/tx/0xc0bc79e37451b8407a85a0588eb7a9cb4cb336f72a2e2bbaa9d10b1053d5224d · setShares(C, 1): https://explorer.arc.io/tx/0x855f0d39ee98527ad61afa169df01900562fc5005bb9b89e9b528ebd24ba7b93 · approve: https://explorer.arc.io/tx/0xbc59ad3299a0f7d7744dd13cd96b7cf7f730485c73e47c64be0c06c1d4d84599 · deposit: https://explorer.arc.io/tx/0x53f2045644a09be8b8dadcabbbf0a4f0527cc96730aee743a44475928ad1d365 · cancel: https://explorer.arc.io/tx/0x3fa2cf078949abee422a5c95ab405875b21b6eaacdae3b9f050490430f6d6cd6 · withdraw after cancel (C): https://explorer.arc.io/tx/0x1b0c57b5857f80972bf9790c186c1ce82cfae999b0e1721ba147fa125c454457 |
 | 10 | After ≥ 3 days streaming: `Σ withdrawn + Σ claimable + dust == streamed`, reconciled with the SDK | in progress — pool 1 is live: https://explorer.arc.io/address/0x92b8fdB2c457b64d4510aC980A84283356D8A44f · https://r4topunk.github.io/sharedarc/app/pool/?id=1 |
 
@@ -184,7 +184,7 @@ than a canned demo — the point is that the other balances visibly do not move.
 - [x] Contract deployed and Sourcify-verified (exact match) — [CHECKLIST.md](CHECKLIST.md) steps 6–8
 - [x] Public repo pushed and project page live — [CHECKLIST.md](CHECKLIST.md) steps 25–26
 - [ ] All ten proof rows have status `success` on mainnet and are recorded above and in
-      `deployments/arc-mainnet.json` (rows 1–4 and 9 done 2026-09-18; 5–8 and 10 in progress)
+      `deployments/arc-mainnet.json` (rows 1–4 and 9 done 2026-09-18, 5–8 on 2026-09-19; 10 in progress)
 - [x] `docs/GAS.md` mainnet column filled for the calls measured so far — [CHECKLIST.md](CHECKLIST.md) step 23
 - [x] Test counts re-checked against a fresh `pnpm check` (2026-09-18: 191 + 4 skipped, 217, 74, 36)
 - [x] Demo video: none (optional)
